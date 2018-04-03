@@ -6,7 +6,6 @@ const queries = require('../../db/queries/nonprofits');
 router.get('/', async function(req, res, next) {
   try {
     const response = await queries.getNonprofits(req.query.page, req.query.posts_per_page);
-    console.log('here')
     res.status(200)
     res.json(response.nonprofits)
   } catch (err) {
