@@ -18,7 +18,6 @@ async function getNonprofits(page = 1, postsPerPage = 10) {
 
 async function getSingleNonprofit(ein) {
   try {
-    console.log('receiving ein: ', ein)
     var query = await knex('nonprofits')
       .select('*')
       .where({ EIN: parseInt(ein, 10) });
