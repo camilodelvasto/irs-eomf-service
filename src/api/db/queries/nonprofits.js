@@ -66,11 +66,26 @@ async function getCount(tableName) {
   }
 }
 
+function clearDB(tableName) {
+  console.log('clearing db: ', tableName)
+  return new Promise(resolve => {
+    // prepare the table for the import
+    knex(tableName).del()
+      .then(() => {
+        resolve(1000);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  });
+}
+
 module.exports = {
   getNonprofits,
   getSingleNonprofit,
   getNonprofitByName,
   getCount,
+  clearDB
 };
 
 // Helper functions to standardize queries before and after
