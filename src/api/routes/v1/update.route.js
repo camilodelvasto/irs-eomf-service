@@ -17,13 +17,22 @@ const CSV_URL =
 // prevent update to be performed if not authenticated for that endpoint (update)
 // prevent the process to start over again if the request is repeated (also, do not download the files)
 
+const timeout = require('connect-timeout');
+
+router.use(timeout(600000));
+router.use(haltOnTimedout);
+
+function haltOnTimedout(req, res, next){
+  if (!req.timedout) next();
+}
 
 router.get('/', async function(req, res, next) {
   try {
     const a1 = await clearDB('new_nonprofits');
-    const a3 = await clearDB('nonprofits', a1);
     const a2 = await fetchRequest(req, a1);
+    const a3 = await clearDB('nonprofits', a2);
     const a4 = await updateDB(0, a3);
+
     const count = await queries.getCount('nonprofits', a4);
     if (count.length) {
       res.status(200)
@@ -145,28 +154,38 @@ function fetchRequest(ctx, a1) {
 }
 
 function updateDB(offset = 0) {
+  if (offset === 0) {
+    console.log('updating "nonprofits" table')
+  }
+  let limit = 2300;
+
   return new Promise(async function (resolve) {
-    console.log('starting batch with: ', offset);
-    let limit = 500;
     var query = await knex('new_nonprofits').select('*').limit(limit).offset(offset);
-    console.log('query.length: ', query.length)
+
     if (query.length) {
       knex.batchInsert('nonprofits', query, query.length)
       .then (async () => {
-        offset += limit;
-        updateDB(offset);
+        resolve(query.length)
       })
       .catch(err => {
         console.log(err, null)
       })
     } else {
-      console.log('no more in the query')
-      resolve(1000);
+      resolve(query.length);
     }
+
     // loop through all the items and copy them to 'nonprofits' table: DONE
     // decode following IRS instructions
     // create diff? 
+  })
+  .then((size) => {
+    if (!size) {
+      return
+    } else {
+      return updateDB(offset += limit)
+    }
   });
+
 }
 
 module.exports = router;

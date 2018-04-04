@@ -67,6 +67,7 @@
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.0",
     "compression": "^1.6.2",
+    "connect-timeout": "^1.9.0",
     "cors": "^2.8.3",
     "cross-env": "^5.0.1",
     "csv": "^2.0.0",

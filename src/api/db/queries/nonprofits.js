@@ -57,8 +57,13 @@ async function getNonprofitByName(query, page = 1, postsPerPage = 10) {
   }
 }
 
-function getCount(tableName) {
-  return knex(tableName).count('*');
+async function getCount(tableName) {
+  try {
+    console.log('counting: ', tableName)
+    return await knex(tableName).count('*');
+  }  catch (err) {
+    console.log(err)
+  }
 }
 
 module.exports = {
