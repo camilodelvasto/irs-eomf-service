@@ -5,7 +5,7 @@ const csv = require('csv-stream');
 const request = require('request');
 const knex = require('../../../config/pg');
 const CSV_URL =
-    'https://www.irs.gov/pub/irs-soi/eo3.csv';
+    'https://www.irs.gov/pub/irs-soi/eo1.csv';
 //  "https://angry-kare-394764.netlify.com/data/irs-data-eomf-1.csv";
 
 // TODO
@@ -20,9 +20,11 @@ const CSV_URL =
 
 router.get('/', async function(req, res, next) {
   try {
-    const a1 = await prepareDB();
+    const a1 = await clearDB('new_nonprofits');
+    const a3 = await clearDB('nonprofits', a1);
     const a2 = await fetchRequest(req, a1);
-    const count = await queries.getNewNonprofitsCount(a2);
+    const a4 = await updateDB(0, a3);
+    const count = await queries.getCount('nonprofits', a4);
     if (count.length) {
       res.status(200)
       res.json({
@@ -41,10 +43,11 @@ router.get('/', async function(req, res, next) {
   }
 });
 
-function prepareDB() {
+function clearDB(tableName) {
+  console.log('clearing db: ', tableName)
   return new Promise(resolve => {
     // prepare the table for the import
-    knex('new_nonprofits').del()
+    knex(tableName).del()
       .then(() => {
         resolve(1000);
       })
@@ -55,6 +58,7 @@ function prepareDB() {
 }
 
 function fetchRequest(ctx, a1) {
+  console.log('importing data: ', CSV_URL)
   return new Promise(resolve => {
     let i = 0;
     let temp = [];
@@ -140,5 +144,29 @@ function fetchRequest(ctx, a1) {
   });
 }
 
+function updateDB(offset = 0) {
+  return new Promise(async function (resolve) {
+    console.log('starting batch with: ', offset);
+    let limit = 500;
+    var query = await knex('new_nonprofits').select('*').limit(limit).offset(offset);
+    console.log('query.length: ', query.length)
+    if (query.length) {
+      knex.batchInsert('nonprofits', query, query.length)
+      .then (async () => {
+        offset += limit;
+        updateDB(offset);
+      })
+      .catch(err => {
+        console.log(err, null)
+      })
+    } else {
+      console.log('no more in the query')
+      resolve(1000);
+    }
+    // loop through all the items and copy them to 'nonprofits' table: DONE
+    // decode following IRS instructions
+    // create diff? 
+  });
+}
 
 module.exports = router;

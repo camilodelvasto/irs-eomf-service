@@ -57,19 +57,15 @@ async function getNonprofitByName(query, page = 1, postsPerPage = 10) {
   }
 }
 
-function getNonprofitsCount() {
-  return knex('nonprofits').count('*');
-}
-
-function getNewNonprofitsCount() {
-  return knex('new_nonprofits').count('*');
+function getCount(tableName) {
+  return knex(tableName).count('*');
 }
 
 module.exports = {
   getNonprofits,
   getSingleNonprofit,
   getNonprofitByName,
-  getNewNonprofitsCount,
+  getCount,
 };
 
 // Helper functions to standardize queries before and after
