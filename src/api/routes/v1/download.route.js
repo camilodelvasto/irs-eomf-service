@@ -5,7 +5,7 @@ const csv = require('csv-stream');
 const request = require('request');
 const knex = require('../../../config/pg');
 const CSV_URL =
-    'https://www.irs.gov/pub/irs-soi/eo3.csv';
+    'https://www.irs.gov/pub/irs-soi/eo4.csv';
 //  "https://angry-kare-394764.netlify.com/data/irs-data-eomf-1.csv";
 
 // TODO
@@ -29,8 +29,7 @@ function haltOnTimedout(req, res, next){
 
 router.get('/', async function(req, res, next) {
   try {
-    const a1 = await queries.clearDB('new_nonprofits');
-    const a2 = await fetchRequest(req, a1);
+    const a2 = await fetchRequest(req);
     const count = await queries.getCount('new_nonprofits', a2);
 
     if (count.length) {
@@ -86,7 +85,7 @@ function fetchRequest(ctx, a1) {
             AFFILIATION: data.AFFILIATION || '',
             CLASSIFICATION: data.CLASSIFICATION || '',
             RULING: data.RULING || '',
-            DEDUCTIBILITY: data.DEDUCTIBILITY || '',
+            DEDUCTIBILITY: data.DEDUCTIBILITY || 0,
             FOUNDATION: data.FOUNDATION || '',
             ACTIVITY: data.ACTIVITY || '',
             ORGANIZATION: data.ORGANIZATION || '',

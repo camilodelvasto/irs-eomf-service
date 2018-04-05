@@ -15,7 +15,7 @@ exports.up = knex => {
       table.string('AFFILIATION');
       table.string('CLASSIFICATION');
       table.string('RULING');
-      table.string('DEDUCTIBILITY');
+      table.integer('DEDUCTIBILITY');
       table.string('FOUNDATION');
       table.string('ACTIVITY');
       table.string('ORGANIZATION');
