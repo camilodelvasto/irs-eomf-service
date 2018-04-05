@@ -6,7 +6,8 @@ const app = require('./config/express');
 // listen to requests
 const server = app.listen(port, () => console.info(`server started on port ${port} (${env})`));
 
-server.timeout = 1800000
+server.timeout = 1800000;
+
 /**
 * Exports express
 * @public
