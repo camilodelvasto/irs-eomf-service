@@ -8,10 +8,7 @@ const IRSDataParser = require('../../utils/IRSDataParser');
 
 // TODO
 // write tests
-// move parsing of file to another file
-// - post a success or error message after import: fix count
-// - use socket IO to update client while performing the updates
-// - update 'nonprofits' table with new data & clean up file: remove extra columns not needed when updating the main table
+// - use socket IO to update client while performing the updates: wishlist
 // - compare and create diff for endpoint
 // prevent update to be performed if not authenticated for that endpoint (update)
 // prevent the process to start over again if the request is repeated (also, do not download the files)
@@ -57,19 +54,15 @@ function compareBatch(index, batchCount) {
       var batch = await knex('new_nonprofits').select('*').limit(batchSize).offset(batchSize * index)
       .then(batch => {
         // fix for 1.5M+ rows (client ): DONE.
-        // remove unused keys
-        // decode/parse some columns
+        // remove unused keys: DONE
         // create diff?
-        console.log(index, batch[0].EIN)
-        console.log('batch.length: ', batch.length)
-
         // Remove all nonprofits with a non 1 deductibility code.
         var newBatch = batch.filter(nonprofit => {
           return nonprofit.DEDUCTIBILITY === 1
         })
-        console.log('newBatch.length: ', newBatch.length)
 
         newBatch.forEach(nonprofit => {
+          // Parse data following THE IRS infosheet
           delete nonprofit.ICO
           delete nonprofit.STATUS
           delete nonprofit.TAX_PERIOD
@@ -80,28 +73,23 @@ function compareBatch(index, batchCount) {
           delete nonprofit.ACCT_PD
           delete nonprofit.FOUNDATION
           delete nonprofit.ORGANIZATION
-
-          // Parse data following IRS infosheet
           nonprofit.CLASSIFICATION = IRSDataParser.getClassification(nonprofit.SUBSECTION, nonprofit.CLASSIFICATION)
-          delete nonprofit.SUBSECTION
-
           nonprofit.ACTIVITY = IRSDataParser.getActivity(nonprofit.ACTIVITY)
           nonprofit.NTEE = IRSDataParser.getNTEE(nonprofit.NTEE_CD)
-
+          delete nonprofit.SUBSECTION
         })
         knex.batchInsert('nonprofits', newBatch, newBatch.length)
           .then(() => {
-            console.log('inserted: ', newBatch.length);
+            // Resolve promise and return true if this was the last batch to process.
+            if (index === batchCount) {
+              resolve(true)
+            } else {
+              resolve(false)
+            }
           })
           .catch(err => {
             console.log(err, null);
           });
-
-        if (index === batchCount) {
-          resolve(true)
-        } else {
-          resolve(false)
-        }
       })
       .catch(err => {
         console.log(err)
@@ -113,12 +101,12 @@ function compareBatch(index, batchCount) {
 }
 
 function updateDB() {
+  console.log('updating...')
   return new Promise(async resolve => {
     try {
       var count = await queries.getCount('new_nonprofits')
       var batchSize = 1000
       var batchCount = Math.ceil(count[0].count / batchSize)
-      console.log('batchCount: ', batchCount)
       for (var i = 0; i < batchCount; i++) {
         var test = await compareBatch(i, batchCount - 1)
         if (test) {

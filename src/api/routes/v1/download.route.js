@@ -15,6 +15,7 @@ const CSV_URL =
 // - use socket IO to update client while performing the updates
 // - update 'nonprofits' table with new data & clean up file: remove extra columns not needed when updating the main table
 // - compare and create diff for endpoint
+// - avoid duplicated data when downloading.
 // prevent update to be performed if not authenticated for that endpoint (update)
 // prevent the process to start over again if the request is repeated (also, do not download the files)
 
