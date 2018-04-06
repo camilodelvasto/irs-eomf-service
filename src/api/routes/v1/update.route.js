@@ -63,6 +63,9 @@ function compareBatch(index, batchCount) {
 
         newBatch.forEach(nonprofit => {
           // Parse data following THE IRS infosheet
+          nonprofit.CLASSIFICATION = IRSDataParser.getClassification(nonprofit.SUBSECTION, nonprofit.CLASSIFICATION)
+          nonprofit.ACTIVITY = IRSDataParser.getActivity(nonprofit.ACTIVITY)
+          nonprofit.NTEE = IRSDataParser.getNTEE(nonprofit.NTEE_CD)
           delete nonprofit.ICO
           delete nonprofit.STATUS
           delete nonprofit.TAX_PERIOD
@@ -73,9 +76,6 @@ function compareBatch(index, batchCount) {
           delete nonprofit.ACCT_PD
           delete nonprofit.FOUNDATION
           delete nonprofit.ORGANIZATION
-          nonprofit.CLASSIFICATION = IRSDataParser.getClassification(nonprofit.SUBSECTION, nonprofit.CLASSIFICATION)
-          nonprofit.ACTIVITY = IRSDataParser.getActivity(nonprofit.ACTIVITY)
-          nonprofit.NTEE = IRSDataParser.getNTEE(nonprofit.NTEE_CD)
           delete nonprofit.SUBSECTION
         })
         knex.batchInsert('nonprofits', newBatch, newBatch.length)

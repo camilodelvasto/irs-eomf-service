@@ -18,14 +18,28 @@ describe('routes : update', function() {
   before(async () => {
     return knex.migrate.rollback()
     .then(() => { return knex.migrate.latest(); })
-    .then(() => { return knex.seed.run(); });
+//    .then(() => { return knex.seed.run(); });
   });
 
   after(() => {
 //    return knex.migrate.rollback();
   });
 
-  it('should populate a new database and return 1000 records', (done) => {
+  it('should populate a new database and return 4328 records', (done) => {
+    chai.request(app)
+    .get('/v1/download')
+    .end((err, res) => {
+      should.not.exist(err);
+      res.status.should.equal(200);
+      res.type.should.equal('application/json');
+      res.body.status.should.eql('success');
+      res.body.message.should.eql('Import performed successfully');
+      res.body.count.should.eql(3428);
+      done();
+    });
+  });
+
+  it('should parse the data and copy it to a new table', (done) => {
     chai.request(app)
     .get('/v1/update')
     .end((err, res) => {
@@ -33,8 +47,8 @@ describe('routes : update', function() {
       res.status.should.equal(200);
       res.type.should.equal('application/json');
       res.body.status.should.eql('success');
-      res.body.message.should.eql('Import performed successfully');
-      res.body.count.should.eql(1000);
+      res.body.message.should.eql('Update performed successfully');
+      res.body.count.should.eql(2414);
       done();
     });
   });
