@@ -109,7 +109,7 @@ function fetchRequest(ctx, a1) {
           temp = arr;
           arr = [];
 
-          knex.batchInsert('new_nonprofits', temp, temp.length)
+          knex.raw(queries.batchUpsert('new_nonprofits', temp, 'EIN'))
             .then(() => {
               temp = [];
             })
@@ -120,7 +120,7 @@ function fetchRequest(ctx, a1) {
       })
       .on('end', () => {
         if (arr.length) {
-          knex.batchInsert('new_nonprofits', arr, arr.length)
+          knex.raw(queries.batchUpsert('new_nonprofits', arr, 'EIN'))
             .then(() => {
               arr = [];
               resolve(knex('new_nonprofits').count('*'));

@@ -3,7 +3,8 @@ exports.up = knex => {
     .createTable('nonprofits', table => {
       table
         .integer('EIN')
-        .notNullable();
+        .notNullable()
+        .unique();
       table.string('NAME');
       table.string('STREET');
       table.string('CITY');

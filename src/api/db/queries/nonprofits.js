@@ -80,7 +80,26 @@ function clearDB(tableName) {
   });
 }
 
+function batchUpsert(tableName, data, id) {
+  var parsed = [];
+  data.forEach(nonprofit => {
+    var values = []
+    for (var k in nonprofit) {
+      if (k === 'EIN' || k === 'DEDUCTIBILITY' || k === 'REVENUE_AMT') {
+        values.push(`${nonprofit[k] || 0}`)
+      } else {
+        // Escape single quotes coming from text fields.
+        values.push(`'${nonprofit[k].replace(/'/g, "\''") || ""}'`)
+      }
+    }
+    parsed.push(`(${values.join(',')})`)
+  })
+
+  return `INSERT INTO ${tableName} VALUES ${parsed.join(',')} ON CONFLICT ("${id}") DO NOTHING`
+}
+
 module.exports = {
+  batchUpsert,
   getNonprofits,
   getSingleNonprofit,
   getNonprofitByName,

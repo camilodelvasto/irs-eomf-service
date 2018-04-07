@@ -10,7 +10,6 @@ const IRSDataParser = require('../../utils/IRSDataParser');
 // write tests
 // - use socket IO to update client while performing the updates: wishlist
 // - compare and create diff for endpoint
-// prevent update to be performed if not authenticated for that endpoint (update)
 // prevent the process to start over again if the request is repeated (also, do not download the files)
 // - repeat for all the 4 files
 
@@ -78,18 +77,18 @@ function compareBatch(index, batchCount) {
           delete nonprofit.ORGANIZATION
           delete nonprofit.SUBSECTION
         })
-        knex.batchInsert('nonprofits', newBatch, newBatch.length)
-          .then(() => {
-            // Resolve promise and return true if this was the last batch to process.
-            if (index === batchCount) {
-              resolve(true)
-            } else {
-              resolve(false)
-            }
-          })
-          .catch(err => {
-            console.log(err, null);
-          });
+        knex.raw(queries.batchUpsert('nonprofits', newBatch, 'EIN'))
+        .then(() => {
+          // Resolve promise and return true if this was the last batch to process.
+          if (index === batchCount) {
+            resolve(true)
+          } else {
+            resolve(false)
+          }
+        })
+        .catch(err => {
+          console.log(err, null);
+        });
       })
       .catch(err => {
         console.log(err)
