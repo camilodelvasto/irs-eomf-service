@@ -1,50 +1,59 @@
-const express = require('express');
-const router = express.Router();
+const knex = require('../connection');
 const queries = require('../../db/queries/nonprofits');
-const csv = require('csv-stream');
+const IRSDataParser = require('../../utils/IRSDataParser');
 const request = require('request');
-const knex = require('../../../config/pg');
-const CSV_URL =
-    'https://www.irs.gov/pub/irs-soi/eo';
-//  "https://angry-kare-394764.netlify.com/data/irs-data-eomf-1.csv";
+const csv = require('csv-stream');
+const CSV_URL = 'https://www.irs.gov/pub/irs-soi/eo';
 
-// TODO
-// - repeat for all the 4 files
-// - compare and create diff for endpoint
-// prevent update to be performed if not authenticated for that endpoint (tokenize 'update' endpoint)
-// prevent the process to start over again if the request is repeated (also, do not download the files)
+function compareBatch(index, batchCount) {
+  return new Promise(async resolve => {
+    try {
+      var batchSize = 1000
+      var batch = await knex('new_nonprofits').select('*').limit(batchSize).offset(batchSize * index)
+      .then(batch => {
+        // Remove all nonprofits with a non 1 deductibility code.
+        var newBatch = batch.filter(nonprofit => {
+          return nonprofit.DEDUCTIBILITY === 1
+        })
 
-const timeout = require('connect-timeout');
-
-router.use(timeout(6000000));
-router.use(haltOnTimedout);
-
-function haltOnTimedout(req, res, next){
-  if (!req.timedout) next();
-}
-
-router.get('/:part', async function(req, res, next) {
-  try {
-    const a2 = await fetchRequest(req);
-    const count = await queries.getCount('new_nonprofits', a2);
-
-    if (a2) {
-      res.status(200)
-      res.json({
-        status: 'success',
-        message: 'Import performed successfully',
-        count: parseInt(count[0].count, 10),        
+        newBatch.forEach(nonprofit => {
+          // Parse data following THE IRS infosheet
+          nonprofit.CLASSIFICATION = IRSDataParser.getClassification(nonprofit.SUBSECTION, nonprofit.CLASSIFICATION)
+          nonprofit.ACTIVITY = IRSDataParser.getActivity(nonprofit.ACTIVITY)
+          nonprofit.NTEE_CD = IRSDataParser.getNTEE(nonprofit.NTEE_CD)
+          delete nonprofit.ICO
+          delete nonprofit.STATUS
+          delete nonprofit.TAX_PERIOD
+          delete nonprofit.ASSET_CD
+          delete nonprofit.INCOME_CD
+          delete nonprofit.FILING_REQ_CD
+          delete nonprofit.PF_FILING_REQ_CD
+          delete nonprofit.ACCT_PD
+          delete nonprofit.FOUNDATION
+          delete nonprofit.ORGANIZATION
+          delete nonprofit.SUBSECTION
+        })
+        knex.raw(queries.batchUpsert('nonprofits', newBatch, 'EIN'))
+        .then(() => {
+          // Resolve promise and return true if this was the last batch to process.
+          if (index === batchCount) {
+            resolve(true)
+          } else {
+            resolve(false)
+          }
+        })
+        .catch(err => {
+          console.log(err, null);
+        });
       })
-    } else {
-      res.json({
-        status: 'error',
-        message: 'Import was not completed'
+      .catch(err => {
+        console.log(err)
       })
+    } catch (err) {
+      console.log(err)
     }
-  } catch (err) {
-    console.log(err);
-  }
-});
+  })
+}
 
 function fetchRequest(req, a1) {
   return new Promise(resolve => {
@@ -57,6 +66,7 @@ function fetchRequest(req, a1) {
       return resolve(0)
     }
     var fullUrl = `${CSV_URL}${fileNumber}.csv`
+
     console.log('importing data: ', fullUrl)
     request(fullUrl)
       .pipe(csv.createStream({
@@ -138,4 +148,27 @@ function fetchRequest(req, a1) {
   });
 }
 
-module.exports = router;
+function updateDB() {
+  console.log('updating...')
+  return new Promise(async resolve => {
+    try {
+      var count = await queries.getCount('new_nonprofits')
+      var batchSize = 1000
+      var batchCount = Math.ceil(count[0].count / batchSize)
+      for (var i = 0; i < batchCount; i++) {
+        var test = await compareBatch(i, batchCount - 1)
+        if (test) {
+          resolve()
+        }
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  });
+}
+
+module.exports = {
+  compareBatch,
+  fetchRequest,
+  updateDB
+};

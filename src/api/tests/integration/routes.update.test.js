@@ -24,7 +24,7 @@ describe('routes : update', function() {
 
   it('should import nothing if the URL part does not exist', (done) => {
     chai.request(app)
-    .get('/v1/download/0')
+    .get('/v1/update/download/0')
     .end((err, res) => {
       should.not.exist(err);
       res.status.should.equal(200);
@@ -37,7 +37,7 @@ describe('routes : update', function() {
 
   it('should populate a new database and return around 3461 records', (done) => {
     chai.request(app)
-    .get('/v1/download/4')
+    .get('/v1/update/download/4')
     .end((err, res) => {
       should.not.exist(err);
       res.status.should.equal(200);
@@ -51,7 +51,7 @@ describe('routes : update', function() {
 
   it('should parse the data and copy it to a new table', (done) => {
     chai.request(app)
-    .get('/v1/update')
+    .get('/v1/update/parse')
     .end((err, res) => {
       should.not.exist(err);
       res.status.should.equal(200);

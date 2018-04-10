@@ -1,10 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const queries = require('../../db/queries/nonprofits');
-const csv = require('csv-stream');
-const request = require('request');
+const updateHelpers = require('../../db/queries/update');
 const knex = require('../../../config/pg');
-const IRSDataParser = require('../../utils/IRSDataParser');
 
 // TODO
 // write tests
@@ -22,10 +20,10 @@ function haltOnTimedout(req, res, next){
   if (!req.timedout) next();
 }
 
-router.get('/', async function(req, res, next) {
+router.get('/parse', async function(req, res, next) {
   try {
     const a3 = await queries.clearDB('nonprofits');
-    const a4 = await updateDB(a3);
+    const a4 = await updateHelpers.updateDB(a3);
 
     const count = await queries.getCount('nonprofits', a4);
     if (count.length) {
@@ -46,73 +44,28 @@ router.get('/', async function(req, res, next) {
   }
 });
 
-function compareBatch(index, batchCount) {
-  return new Promise(async resolve => {
-    try {
-      var batchSize = 1000
-      var batch = await knex('new_nonprofits').select('*').limit(batchSize).offset(batchSize * index)
-      .then(batch => {
-        // Remove all nonprofits with a non 1 deductibility code.
-        var newBatch = batch.filter(nonprofit => {
-          return nonprofit.DEDUCTIBILITY === 1
-        })
+router.get('/download/:part', async function(req, res, next) {
+  try {
+    const a2 = await updateHelpers.fetchRequest(req);
+    const count = await queries.getCount('new_nonprofits', a2);
 
-        newBatch.forEach(nonprofit => {
-          // Parse data following THE IRS infosheet
-          nonprofit.CLASSIFICATION = IRSDataParser.getClassification(nonprofit.SUBSECTION, nonprofit.CLASSIFICATION)
-          nonprofit.ACTIVITY = IRSDataParser.getActivity(nonprofit.ACTIVITY)
-          nonprofit.NTEE_CD = IRSDataParser.getNTEE(nonprofit.NTEE_CD)
-          delete nonprofit.ICO
-          delete nonprofit.STATUS
-          delete nonprofit.TAX_PERIOD
-          delete nonprofit.ASSET_CD
-          delete nonprofit.INCOME_CD
-          delete nonprofit.FILING_REQ_CD
-          delete nonprofit.PF_FILING_REQ_CD
-          delete nonprofit.ACCT_PD
-          delete nonprofit.FOUNDATION
-          delete nonprofit.ORGANIZATION
-          delete nonprofit.SUBSECTION
-        })
-        knex.raw(queries.batchUpsert('nonprofits', newBatch, 'EIN'))
-        .then(() => {
-          // Resolve promise and return true if this was the last batch to process.
-          if (index === batchCount) {
-            resolve(true)
-          } else {
-            resolve(false)
-          }
-        })
-        .catch(err => {
-          console.log(err, null);
-        });
+    if (a2) {
+      res.status(200)
+      res.json({
+        status: 'success',
+        message: 'Import performed successfully',
+        count: parseInt(count[0].count, 10),        
       })
-      .catch(err => {
-        console.log(err)
+    } else {
+      res.json({
+        status: 'error',
+        message: 'Import was not completed'
       })
-    } catch (err) {
-      console.log(err)
     }
-  })
-}
+  } catch (err) {
+    console.log(err);
+  }
+});
 
-function updateDB() {
-  console.log('updating...')
-  return new Promise(async resolve => {
-    try {
-      var count = await queries.getCount('new_nonprofits')
-      var batchSize = 1000
-      var batchCount = Math.ceil(count[0].count / batchSize)
-      for (var i = 0; i < batchCount; i++) {
-        var test = await compareBatch(i, batchCount - 1)
-        if (test) {
-          resolve()
-        }
-      }
-    } catch (err) {
-      console.log(err)
-    }
-  });
-}
 
 module.exports = router;
