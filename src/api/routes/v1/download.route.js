@@ -5,18 +5,13 @@ const csv = require('csv-stream');
 const request = require('request');
 const knex = require('../../../config/pg');
 const CSV_URL =
-    'https://www.irs.gov/pub/irs-soi/eo4.csv';
+    'https://www.irs.gov/pub/irs-soi/eo';
 //  "https://angry-kare-394764.netlify.com/data/irs-data-eomf-1.csv";
 
 // TODO
-// - fix for largest file and combined files
-// - post a success or error message after import
 // - repeat for all the 4 files
-// - use socket IO to update client while performing the updates
-// - update 'nonprofits' table with new data & clean up file: remove extra columns not needed when updating the main table
 // - compare and create diff for endpoint
-// - avoid duplicated data when downloading.
-// prevent update to be performed if not authenticated for that endpoint (update)
+// prevent update to be performed if not authenticated for that endpoint (tokenize 'update' endpoint)
 // prevent the process to start over again if the request is repeated (also, do not download the files)
 
 const timeout = require('connect-timeout');
@@ -28,12 +23,12 @@ function haltOnTimedout(req, res, next){
   if (!req.timedout) next();
 }
 
-router.get('/', async function(req, res, next) {
+router.get('/:part', async function(req, res, next) {
   try {
     const a2 = await fetchRequest(req);
     const count = await queries.getCount('new_nonprofits', a2);
 
-    if (count.length) {
+    if (a2) {
       res.status(200)
       res.json({
         status: 'success',
@@ -51,14 +46,19 @@ router.get('/', async function(req, res, next) {
   }
 });
 
-function fetchRequest(ctx, a1) {
-  console.log('importing data: ', CSV_URL)
+function fetchRequest(req, a1) {
   return new Promise(resolve => {
     let i = 0;
     let temp = [];
     let arr = [];
 
-    request(CSV_URL)
+    var fileNumber = parseInt(req.params.part, 10)
+    if ( fileNumber < 1 || fileNumber > 4) {
+      return resolve(0)
+    }
+    var fullUrl = `${CSV_URL}${fileNumber}.csv`
+    console.log('importing data: ', fullUrl)
+    request(fullUrl)
       .pipe(csv.createStream({
         columns: [
           'EIN', 'NAME', 'ICO', 'STREET', 'CITY',

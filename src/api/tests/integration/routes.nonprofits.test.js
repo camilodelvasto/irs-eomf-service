@@ -8,9 +8,6 @@ chai.use(chaiHttp);
 const app = require('../../../index');
 const knex = require('../../../config/pg');
 
-
-// const router = express.Router();
-
 describe('routes : nonprofits', () => {
 
   beforeEach(async () => {

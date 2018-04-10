@@ -8,9 +8,6 @@ chai.use(chaiHttp);
 const app = require('../../../index');
 const knex = require('../../../config/pg');
 
-
-// const router = express.Router();
-
 describe('routes : update', function() {
   // This is needed as downloading the large files will take several minutes.
   this.timeout(150000);
@@ -25,16 +22,29 @@ describe('routes : update', function() {
 //    return knex.migrate.rollback();
   });
 
-  it('should populate a new database and return 4328 records', (done) => {
+  it('should import nothing if the URL part does not exist', (done) => {
     chai.request(app)
-    .get('/v1/download')
+    .get('/v1/download/0')
+    .end((err, res) => {
+      should.not.exist(err);
+      res.status.should.equal(200);
+      res.type.should.equal('application/json');
+      res.body.status.should.eql('error');
+      res.body.message.should.eql('Import was not completed');
+      done();
+    });
+  });
+
+  it('should populate a new database and return around 3461 records', (done) => {
+    chai.request(app)
+    .get('/v1/download/4')
     .end((err, res) => {
       should.not.exist(err);
       res.status.should.equal(200);
       res.type.should.equal('application/json');
       res.body.status.should.eql('success');
       res.body.message.should.eql('Import performed successfully');
-      res.body.count.should.eql(3428);
+      res.body.count.should.eql(3461);
       done();
     });
   });
@@ -48,7 +58,7 @@ describe('routes : update', function() {
       res.type.should.equal('application/json');
       res.body.status.should.eql('success');
       res.body.message.should.eql('Update performed successfully');
-      res.body.count.should.eql(2414);
+      res.body.count.should.eql(2441);
       done();
     });
   });

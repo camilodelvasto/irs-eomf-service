@@ -52,9 +52,6 @@ function compareBatch(index, batchCount) {
       var batchSize = 1000
       var batch = await knex('new_nonprofits').select('*').limit(batchSize).offset(batchSize * index)
       .then(batch => {
-        // fix for 1.5M+ rows (client ): DONE.
-        // remove unused keys: DONE
-        // create diff?
         // Remove all nonprofits with a non 1 deductibility code.
         var newBatch = batch.filter(nonprofit => {
           return nonprofit.DEDUCTIBILITY === 1
