@@ -64,7 +64,7 @@ function compareBatch(index, batchCount) {
           // Parse data following THE IRS infosheet
           nonprofit.CLASSIFICATION = IRSDataParser.getClassification(nonprofit.SUBSECTION, nonprofit.CLASSIFICATION)
           nonprofit.ACTIVITY = IRSDataParser.getActivity(nonprofit.ACTIVITY)
-          nonprofit.NTEE = IRSDataParser.getNTEE(nonprofit.NTEE_CD)
+          nonprofit.NTEE_CD = IRSDataParser.getNTEE(nonprofit.NTEE_CD)
           delete nonprofit.ICO
           delete nonprofit.STATUS
           delete nonprofit.TAX_PERIOD

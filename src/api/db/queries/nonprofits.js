@@ -7,10 +7,8 @@ async function getNonprofits(page = 1, postsPerPage = 10) {
 
     // Perform queries
     var query = await knex('nonprofits').select('*').limit(limit).offset(offset)
-    var count = await knex('nonprofits').count('*')
 
-    //return standardizeOutput(query, count)
-    return standardizeOutput(query, count, limit)
+    return query
   } catch (err) {
     console.log(err)
   }
@@ -22,11 +20,7 @@ async function getSingleNonprofit(ein) {
       .select('*')
       .where({ EIN: parseInt(ein, 10) });
 
-    var count = await knex('nonprofits')
-      .count('*')
-      .where({ EIN: parseInt(ein, 10) });
-
-    return standardizeOutput(query, count)
+    return query
   } catch (err) {
     console.log(err)
   }
@@ -43,15 +37,11 @@ async function getNonprofitByName(query, page = 1, postsPerPage = 10) {
       .select('*')
       .where('NAME', 'LIKE', `%${upQuery}%`)
       .orWhere('SORT_NAME', 'LIKE', `%${upQuery}%`)
+      .orWhere('CITY', 'LIKE', `%${upQuery}%`)
       .limit(limit)
       .offset(offset);
 
-    var count = await knex('nonprofits')
-      .count('*')
-      .where('NAME', 'LIKE', `%${upQuery}%`)
-      .orWhere('SORT_NAME', 'LIKE', `%${upQuery}%`);
-
-    return standardizeOutput(query, count, limit)
+    return query
   } catch (err) {
     console.log(err)
   }
@@ -121,17 +111,4 @@ function standardizeParams(page = 1, postsPerPage = 10) {
   }
   var limit = postsPerPage
   return { offset, limit }
-}
-
-function standardizeOutput(query, count, limit = 10) {
-  var totalPages = 0
-  if (count[0].count > 0) {
-    totalPages = Math.ceil(count[0].count / limit)
-  }
-  return {
-    nonprofits: query,
-    pages: totalPages,
-    count: parseInt(count[0].count)
-  }
-
 }

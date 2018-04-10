@@ -20,7 +20,6 @@ exports.up = knex => {
       table.string('INCOME_AMT');
       table.integer('REVENUE_AMT');
       table.string('NTEE_CD');
-      table.string('NTEE');
       table.string('SORT_NAME');
     });
 };
