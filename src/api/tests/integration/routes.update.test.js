@@ -15,27 +15,38 @@ describe('routes : update', function() {
   before(async () => {
     return knex.migrate.rollback()
     .then(() => { return knex.migrate.latest(); })
-//    .then(() => { return knex.seed.run(); });
   });
 
   after(() => {
-//    return knex.migrate.rollback();
+    return knex.migrate.rollback();
+  });
+
+  it('should clear the DB and return 0 records', (done) => {
+    chai.request(app)
+    .get('/v1/update/clear')
+    .end((err, res) => {
+      should.not.exist(err);
+      res.status.should.equal(200);
+      res.type.should.equal('application/json');
+      res.body.status.should.eql('success');
+      res.body.message.should.eql('The table was successfully emptied');
+      done();
+    });
   });
 
   it('should import nothing if the URL part does not exist', (done) => {
     chai.request(app)
     .get('/v1/update/download/0')
     .end((err, res) => {
-      should.not.exist(err);
       res.status.should.equal(200);
       res.type.should.equal('application/json');
       res.body.status.should.eql('error');
-      res.body.message.should.eql('Import was not completed');
+      res.body.message.should.eql('Import was not completed/bad request');
       done();
     });
   });
 
-  it('should populate a new database and return around 3461 records', (done) => {
+  it('should populate a new database and return 3461 records', (done) => {
     chai.request(app)
     .get('/v1/update/download/4')
     .end((err, res) => {
@@ -49,7 +60,7 @@ describe('routes : update', function() {
     });
   });
 
-  it('should parse the data and copy it to a new table', (done) => {
+  it('should parse the data and return exactly 2445', (done) => {
     chai.request(app)
     .get('/v1/update/parse')
     .end((err, res) => {
@@ -58,7 +69,7 @@ describe('routes : update', function() {
       res.type.should.equal('application/json');
       res.body.status.should.eql('success');
       res.body.message.should.eql('Update performed successfully');
-      res.body.count.should.eql(2441);
+      res.body.count.should.eql(2445);
       done();
     });
   });

@@ -84,10 +84,7 @@ function fetchCSVFile(req, a1) {
       }))
 
       .on('data', data => {
-        if (i !== 0) {
-          if (data.EIN == 986000843) {
-            console.log(data)
-          }
+        if (i !== 0 && !isNaN(data.EIN)) {
           arr.push({
             EIN: data.EIN,
             NAME: data.NAME || '',

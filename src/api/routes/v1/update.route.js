@@ -63,7 +63,7 @@ router.get('/download/:part',
     } else {
       res.json({
         status: 'error',
-        message: 'Import was not completed or bad request'
+        message: 'Import was not completed/bad request'
       })
     }
   } catch (err) {
