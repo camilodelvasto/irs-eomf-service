@@ -385,6 +385,9 @@ function getClassification(subsection, classification) {
 function getActivity(activity) {
   var codes = activity.match(/.{3}/g)
   var activityAsText = []
+  if (!codes || !codes.length) {
+    return
+  }
   codes.forEach(value => {
     switch (value) {
       case "001":

@@ -3,6 +3,7 @@ const router = express.Router();
 const queries = require('../../db/queries/nonprofits');
 const updateHelpers = require('../../db/queries/update');
 const knex = require('../../../config/pg');
+var auth = require('../../middlewares/auth');
 
 // TODO
 // write tests
@@ -20,7 +21,59 @@ function haltOnTimedout(req, res, next){
   if (!req.timedout) next();
 }
 
-router.get('/parse', async function(req, res, next) {
+router.get('/clear',
+  auth.restrictAccess,
+  async function(req, res, next) {
+  try {
+    const a2 = await queries.clearDB('nonprofits');
+    const a3 = await queries.clearDB('new_nonprofits');
+    const count = await queries.getCount('nonprofits', a3);
+    if (count.length) {
+      res.status(200)
+      res.json({
+        status: 'success',
+        message: 'The table was successfully emptied',
+        count: parseInt(count[0].count, 10),        
+      })
+    } else {
+      res.json({
+        status: 'error',
+        message: 'The table was not emptied'
+      })
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+router.get('/download/:part',
+  auth.restrictAccess,
+  async function(req, res, next) {
+  try {
+    const a2 = await updateHelpers.fetchCSVFile(req);
+    const count = await queries.getCount('new_nonprofits', a2);
+
+    if (a2) {
+      res.status(200)
+      res.json({
+        status: 'success',
+        message: 'Import performed successfully',
+        count: parseInt(count[0].count, 10),        
+      })
+    } else {
+      res.json({
+        status: 'error',
+        message: 'Import was not completed or bad request'
+      })
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+router.get('/parse',
+  auth.restrictAccess,
+  async function(req, res, next) {
   try {
     const a3 = await queries.clearDB('nonprofits');
     const a4 = await updateHelpers.updateDB(a3);
@@ -43,29 +96,5 @@ router.get('/parse', async function(req, res, next) {
     console.log(err);
   }
 });
-
-router.get('/download/:part', async function(req, res, next) {
-  try {
-    const a2 = await updateHelpers.fetchRequest(req);
-    const count = await queries.getCount('new_nonprofits', a2);
-
-    if (a2) {
-      res.status(200)
-      res.json({
-        status: 'success',
-        message: 'Import performed successfully',
-        count: parseInt(count[0].count, 10),        
-      })
-    } else {
-      res.json({
-        status: 'error',
-        message: 'Import was not completed'
-      })
-    }
-  } catch (err) {
-    console.log(err);
-  }
-});
-
 
 module.exports = router;

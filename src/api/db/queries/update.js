@@ -55,14 +55,14 @@ function compareBatch(index, batchCount) {
   })
 }
 
-function fetchRequest(req, a1) {
+function fetchCSVFile(req, a1) {
   return new Promise(resolve => {
     let i = 0;
     let temp = [];
     let arr = [];
 
     var fileNumber = parseInt(req.params.part, 10)
-    if ( fileNumber < 1 || fileNumber > 4) {
+    if ( fileNumber < 1 || fileNumber > 4 || isNaN(fileNumber) ) {
       return resolve(0)
     }
     var fullUrl = `${CSV_URL}${fileNumber}.csv`
@@ -79,10 +79,15 @@ function fetchRequest(req, a1) {
           'INCOME_CD', 'FILING_REQ_CD', 'PF_FILING_REQ_CD', 'ACCT_PD',
           'ASSET_AMT', 'INCOME_AMT', 'REVENUE_AMT', 'NTEE_CD', 'SORT_NAME',
         ],
+        escapeChar : '"',
+        enclosedChar : '"'
       }))
 
       .on('data', data => {
         if (i !== 0) {
+          if (data.EIN == 986000843) {
+            console.log(data)
+          }
           arr.push({
             EIN: data.EIN,
             NAME: data.NAME || '',
@@ -132,8 +137,8 @@ function fetchRequest(req, a1) {
         if (arr.length) {
           knex.raw(queries.batchUpsert('new_nonprofits', arr, 'EIN'))
             .then(() => {
-              arr = [];
               resolve(knex('new_nonprofits').count('*'));
+              arr = [];
             })
             .catch(err => {
               console.log(err, null);
@@ -169,6 +174,6 @@ function updateDB() {
 
 module.exports = {
   compareBatch,
-  fetchRequest,
+  fetchCSVFile,
   updateDB
 };
