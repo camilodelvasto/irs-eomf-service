@@ -1,0 +1,28 @@
+{
+  "development": {
+    "username": "koa",
+    "password": "password",
+    "database": "exp",
+    "host": "127.0.0.1",
+    "port": "5432",
+    "operatorsAliases": "Op",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "koa",
+    "password": "password",
+    "database": "exp_test",
+    "host": "127.0.0.1",
+    "port": "5432",
+    "operatorsAliases": "Op",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "update me",
+    "password": "update me",
+    "database": "update me",
+    "host": "update me",
+    "operatorsAliases": "Op",
+    "dialect": "update me"
+  }
+}
