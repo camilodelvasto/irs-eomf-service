@@ -22,5 +22,5 @@ function findToken (token, cb) {
 
 module.exports = {
   findToken: findToken,
-  authorize: passport.authenticate('bearer', { session: false })
+  requireToken: passport.authenticate('bearer', { session: false })
 }

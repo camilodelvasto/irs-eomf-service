@@ -25,7 +25,7 @@ function haltOnTimedout(req, res, next){
 }
 
 router.get('/clear',
-  auth.authorize,
+  auth.requireToken,
   async function(req, res, next) {
   try {
     const a2 = await queries.clearDB('nonprofits');
@@ -50,7 +50,7 @@ router.get('/clear',
 });
 
 router.get('/download/:part',
-  auth.authorize,
+  auth.requireToken,
   async function(req, res, next) {
   try {
     const a2 = await updateHelpers.fetchCSVFile(req);
@@ -75,7 +75,7 @@ router.get('/download/:part',
 });
 
 router.get('/parse',
-  auth.authorize,
+  auth.requireToken,
   async function(req, res, next) {
   try {
     const a3 = await queries.clearDB('nonprofits');
