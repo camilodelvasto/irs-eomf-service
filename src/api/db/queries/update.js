@@ -67,7 +67,6 @@ function fetchCSVFile(req, a1) {
     }
     var fullUrl = `${CSV_URL}${fileNumber}.csv`
 
-    console.log('importing data: ', fullUrl)
     request(fullUrl)
       .pipe(csv.createStream({
         columns: [
@@ -151,7 +150,6 @@ function fetchCSVFile(req, a1) {
 }
 
 function updateDB() {
-  console.log('updating...')
   return new Promise(async resolve => {
     try {
       var count = await queries.getCount('new_nonprofits')

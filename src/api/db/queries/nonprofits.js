@@ -49,7 +49,6 @@ async function getNonprofitByName(query, page = 1, postsPerPage = 10) {
 
 async function getCount(tableName) {
   try {
-    console.log('counting: ', tableName)
     return await knex(tableName).count('*');
   }  catch (err) {
     console.log(err)
@@ -57,7 +56,6 @@ async function getCount(tableName) {
 }
 
 function clearDB(tableName) {
-  console.log('clearing db: ', tableName)
   return new Promise(resolve => {
     // prepare the table for the import
     knex(tableName).del()

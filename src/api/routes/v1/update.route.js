@@ -5,8 +5,11 @@ const updateHelpers = require('../../db/queries/update');
 const knex = require('../../../config/pg');
 var auth = require('../../middlewares/auth');
 
+
+
 // TODO
 // write tests
+// refactor and organize code
 // - use socket IO to update client while performing the updates: wishlist
 // - compare and create diff for endpoint
 // prevent the process to start over again if the request is repeated (also, do not download the files)
@@ -22,7 +25,7 @@ function haltOnTimedout(req, res, next){
 }
 
 router.get('/clear',
-  auth.restrictAccess,
+  auth.authorize,
   async function(req, res, next) {
   try {
     const a2 = await queries.clearDB('nonprofits');
@@ -47,7 +50,7 @@ router.get('/clear',
 });
 
 router.get('/download/:part',
-  auth.restrictAccess,
+  auth.authorize,
   async function(req, res, next) {
   try {
     const a2 = await updateHelpers.fetchCSVFile(req);
@@ -72,7 +75,7 @@ router.get('/download/:part',
 });
 
 router.get('/parse',
-  auth.restrictAccess,
+  auth.authorize,
   async function(req, res, next) {
   try {
     const a3 = await queries.clearDB('nonprofits');
