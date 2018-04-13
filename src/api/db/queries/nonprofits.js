@@ -9,7 +9,7 @@ async function getNonprofits(page = 1, postsPerPage = 10) {
 
     // Perform queries
     //var query = await knex('nonprofits').select('*').limit(limit).offset(offset)
-    var query = await nonprofits.findAll()
+    var query = await nonprofits.findAll({ limit: limit, offset: offset })
 
     return query
   } catch (err) {
