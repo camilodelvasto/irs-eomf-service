@@ -5,6 +5,7 @@ module.exports = {
       EIN: {
         type: Sequelize.BIGINT,
         allowNull: false,
+        primaryKey: true,
         unique: true
       },
       NAME: {
@@ -87,6 +88,14 @@ module.exports = {
       },
       SORT_NAME: {
         type: Sequelize.STRING
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE
       }
     });
   },

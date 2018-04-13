@@ -1,4 +1,6 @@
 const knex = require('../connection');
+var db = require('../models')
+var nonprofits = db.nonprofits
 
 async function getNonprofits(page = 1, postsPerPage = 10) {
   try {
@@ -6,7 +8,8 @@ async function getNonprofits(page = 1, postsPerPage = 10) {
     let {offset, limit} = standardizeParams(page, postsPerPage)
 
     // Perform queries
-    var query = await knex('nonprofits').select('*').limit(limit).offset(offset)
+    //var query = await knex('nonprofits').select('*').limit(limit).offset(offset)
+    var query = await nonprofits.findAll()
 
     return query
   } catch (err) {
