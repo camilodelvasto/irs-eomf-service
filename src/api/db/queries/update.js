@@ -133,8 +133,10 @@ function fetchCSVFile(req, a1) {
         if (arr.length) {
           knex.raw(queries.batchUpsert('new_nonprofits', arr, 'EIN'))
             .then(() => {
-              resolve(knex('new_nonprofits').count('*'));
               arr = [];
+              process.nextTick(function() {
+                resolve(knex('new_nonprofits').count('*'))
+              })
             })
             .catch(err => {
               console.log(err, null);
