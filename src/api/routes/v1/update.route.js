@@ -31,12 +31,12 @@ router.get('/clear',
     const a2 = await queries.clearDB('nonprofits');
     const a3 = await queries.clearDB('new_nonprofits');
     const count = await queries.getCount('nonprofits', a3);
-    if (count.length) {
+    if (count) {
       res.status(200)
       res.json({
         status: 'success',
         message: 'The table was successfully emptied',
-        count: parseInt(count[0].count, 10),        
+        count: parseInt(count, 10),        
       })
     } else {
       res.json({
@@ -61,7 +61,7 @@ router.get('/download/:part',
       res.json({
         status: 'success',
         message: 'Import performed successfully',
-        count: parseInt(count[0].count, 10),        
+        count: parseInt(count, 10),        
       })
     } else {
       res.json({
@@ -87,7 +87,7 @@ router.get('/parse',
       res.json({
         status: 'success',
         message: 'Update performed successfully',
-        count: parseInt(count[0].count, 10),        
+        count: parseInt(count, 10),        
       })
     } else {
       res.json({

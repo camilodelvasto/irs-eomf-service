@@ -1,6 +1,9 @@
+var Sequelize = require('sequelize')
 const knex = require('../connection');
+
 var db = require('../models')
 var nonprofits = db.nonprofits
+const Op = Sequelize.Op;
 
 async function getNonprofits(page = 1, postsPerPage = 10) {
   try {
@@ -8,7 +11,6 @@ async function getNonprofits(page = 1, postsPerPage = 10) {
     let {offset, limit} = standardizeParams(page, postsPerPage)
 
     // Perform queries
-    //var query = await knex('nonprofits').select('*').limit(limit).offset(offset)
     var query = await nonprofits.findAll({ limit: limit, offset: offset })
 
     return query
@@ -22,9 +24,11 @@ async function getSingleNonprofit(ein) {
     if (isNaN(ein)) {
       return []
     }
-    var query = await knex('nonprofits')
-      .select('*')
-      .where({ EIN: parseInt(ein, 10) });
+    var query = await nonprofits.findAll({
+      where: {
+        EIN: parseInt(ein, 10)
+      }
+    })
 
     return query
   } catch (err) {
@@ -39,13 +43,30 @@ async function getNonprofitByName(query, page = 1, postsPerPage = 10) {
 
     // Perform queries
     const upQuery = query.toUpperCase();
-    var query = await knex('nonprofits')
-      .select('*')
-      .where('NAME', 'LIKE', `%${upQuery}%`)
-      .orWhere('SORT_NAME', 'LIKE', `%${upQuery}%`)
-      .orWhere('CITY', 'LIKE', `%${upQuery}%`)
-      .limit(limit)
-      .offset(offset);
+
+    var query = await nonprofits.findAll({
+      where: {
+        [Op.or]: [
+          {
+            NAME: {
+              [Op.like]: `%${upQuery}%`
+            }
+          },
+          {
+            SORT_NAME: {
+              [Op.like]: `%${upQuery}%`
+            }
+          },
+          {
+            CITY: {
+              [Op.like]: `%${upQuery}%`
+            }
+          }
+        ]
+      },
+      limit: limit,
+      offset: offset
+    })
 
     return query
   } catch (err) {
@@ -54,11 +75,15 @@ async function getNonprofitByName(query, page = 1, postsPerPage = 10) {
 }
 
 async function getCount(tableName) {
-  try {
-    return await knex(tableName).count('*');
-  }  catch (err) {
-    console.log(err)
-  }
+  return new Promise(resolve => {
+    db['nonprofits'].count()
+      .then(count => {
+        resolve(count)
+      })
+      .catch ((err) => {
+        console.log(err)
+      })
+  })
 }
 
 function clearDB(tableName) {

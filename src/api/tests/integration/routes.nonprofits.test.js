@@ -1,5 +1,6 @@
 process.env.NODE_ENV = 'test';
 
+var db = require('../../db/models')
 const chai = require('chai');
 const should = chai.should();
 const chaiHttp = require('chai-http');
@@ -7,17 +8,37 @@ chai.use(chaiHttp);
 
 const app = require('../../../index');
 const knex = require('../../../config/pg');
+var seed = require('../nonprofits.seed')
+
+const Umzug = require('umzug');
+const umzugConf = require('../../../config/umzug')
+const umzug = new Umzug(umzugConf);
 
 describe('routes : nonprofits', () => {
-
-  beforeEach(async () => {
-    return knex.migrate.rollback()
-    .then(() => { return knex.migrate.latest(); })
-    .then(() => { return knex.seed.run(); });
+  before((done) => {
+    umzug.up()
+      .then(async function (migrations) {
+        seed.down(db.sequelize.getQueryInterface())
+          .then (() => {
+            seed.up(db.sequelize.getQueryInterface())
+              .then (() => {
+                done()
+              })
+          })
+      })
+      .catch (err => {
+        console.log(err)
+      })
   });
 
-  afterEach(() => {
-    return knex.migrate.rollback();
+  after((done) => {
+    umzug.down({ to: 0 })
+      .then(function (migrations) {
+        done()
+      })
+      .catch (err => {
+        console.log(err)
+      });
   });
 
   it('should return 10 nonprofits if no more params are provided', (done) => {

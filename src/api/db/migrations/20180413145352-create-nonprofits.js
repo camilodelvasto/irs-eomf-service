@@ -1,5 +1,4 @@
 'use strict';
-
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable('nonprofits', {
@@ -10,7 +9,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       EIN: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.INTEGER,
         allowNull: false,
         unique: true
       },
@@ -72,9 +71,9 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
-    });
+    })
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('nonprofits');
+    return queryInterface.dropTable('nonprofits')
   }
 };

@@ -156,7 +156,7 @@ function updateDB() {
     try {
       var count = await queries.getCount('new_nonprofits')
       var batchSize = 1000
-      var batchCount = Math.ceil(count[0].count / batchSize)
+      var batchCount = Math.ceil(count / batchSize)
       for (var i = 0; i < batchCount; i++) {
         var test = await compareBatch(i, batchCount - 1)
         if (test) {
