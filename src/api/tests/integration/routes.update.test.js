@@ -21,9 +21,9 @@ describe('routes : update', function() {
 
   before((done) => {
     umzug.down({ to: 0 })
-      .then(function (migrations) {
+      .then(() => {
         umzug.up()
-          .then(function (migrations2) {
+          .then(() => {
             seed.down(db.sequelize.getQueryInterface())
               .then(() => {
                 done()
@@ -34,17 +34,17 @@ describe('routes : update', function() {
           })
       })
   });
-/*
+
   after((done) => {
     umzug.down({ to: 0 })
-      .then(function (migrations) {
+      .then(() => {
         done()
       })
       .catch (err => {
         console.log(err)
       });
   });
-*/
+
   it('should reject the connection if not authorized via token bearer ', (done) => {
     chai.request(app)
     .get('/v1/update/clear')
