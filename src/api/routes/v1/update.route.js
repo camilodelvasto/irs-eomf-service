@@ -5,11 +5,7 @@ const updateHelpers = require('../../db/queries/update');
 const knex = require('../../../config/pg');
 var auth = require('../../middlewares/auth');
 
-
-
 // TODO
-// write tests
-// refactor and organize code
 // - use socket IO to update client while performing the updates: wishlist
 // - compare and create diff for endpoint
 // prevent the process to start over again if the request is repeated (also, do not download the files)
@@ -31,7 +27,7 @@ router.get('/clear',
     const a2 = await queries.clearDB('nonprofits');
     const a3 = await queries.clearDB('new_nonprofits');
     const count = await queries.getCount('nonprofits', a3);
-    if (count) {
+    if (count === 0) {
       res.status(200)
       res.json({
         status: 'success',
@@ -82,7 +78,7 @@ router.get('/parse',
     const a4 = await updateHelpers.updateDB(a3);
 
     const count = await queries.getCount('nonprofits', a4);
-    if (count.length) {
+    if (count) {
       res.status(200)
       res.json({
         status: 'success',

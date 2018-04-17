@@ -379,14 +379,14 @@ function getClassification(subsection, classification) {
       })
       break;
   }
-  return classificationAsText.join('; ')
+  return classificationAsText.join('; ') || ''
 }
 
 function getActivity(activity) {
   var codes = activity.match(/.{3}/g)
   var activityAsText = []
   if (!codes || !codes.length) {
-    return
+    return ''
   }
   codes.forEach(value => {
     switch (value) {
@@ -1199,7 +1199,7 @@ function getActivity(activity) {
         break;
     }
   })
-  return activityAsText.join('; ')
+  return activityAsText.join('; ') || ''
 }
 
 function getNTEE(code) {
@@ -3021,7 +3021,7 @@ function getNTEE(code) {
       return 'Unknown'
       break;
     default:
-      return ""
+      return ''
       break;
   }
 

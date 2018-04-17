@@ -1,6 +1,5 @@
 process.env.NODE_ENV = 'test';
 
-var db = require('../../db/models')
 const chai = require('chai');
 const should = chai.should();
 const chaiHttp = require('chai-http');
@@ -8,11 +7,13 @@ chai.use(chaiHttp);
 
 const app = require('../../../index');
 const knex = require('../../../config/pg');
-var seed = require('../nonprofits.seed')
 
+// Get and configure library for managing migrations.
+var db = require('../../db/models')
 const Umzug = require('umzug');
 const umzugConf = require('../../../config/umzug')
 const umzug = new Umzug(umzugConf);
+var seed = require('../nonprofits.seed')
 
 describe('routes : nonprofits', () => {
   before((done) => {

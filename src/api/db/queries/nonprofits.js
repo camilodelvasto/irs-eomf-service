@@ -76,7 +76,7 @@ async function getNonprofitByName(query, page = 1, postsPerPage = 10) {
 
 async function getCount(tableName) {
   return new Promise(resolve => {
-    db['nonprofits'].count()
+    db[tableName].count()
       .then(count => {
         resolve(count)
       })
@@ -89,7 +89,7 @@ async function getCount(tableName) {
 function clearDB(tableName) {
   return new Promise(resolve => {
     // prepare the table for the import
-    knex(tableName).del()
+    db.sequelize.getQueryInterface().bulkDelete(tableName, null, {})
       .then(() => {
         resolve(1000);
       })
@@ -100,21 +100,29 @@ function clearDB(tableName) {
 }
 
 function batchUpsert(tableName, data, id) {
+  if (!data.length) {
+    return ''
+  }
   var parsed = [];
+  var keys = [];
+  for (var key in data[0]) {
+    keys.push(`"${key}"`)
+  }
   data.forEach(nonprofit => {
     var values = []
     for (var k in nonprofit) {
-      if (k === 'EIN' || k === 'DEDUCTIBILITY' || k === 'REVENUE_AMT') {
+      if (!isNaN(nonprofit[k])) {
         values.push(`${nonprofit[k] || 0}`)
+      } else if (nonprofit[k] === null || typeof nonprofit === 'undefined') {
+        values.push(`'${nonprofit[k] || ""}'`)
       } else {
-        // Escape single quotes coming from text fields.
-        values.push(`'${nonprofit[k].replace(/'/g, "\''") || ""}'`)
+        values.push(`'${nonprofit[k].replace(/\'/g, '')}'`)
       }
     }
     parsed.push(`(${values.join(',')})`)
   })
 
-  return `INSERT INTO ${tableName} VALUES ${parsed.join(',')} ON CONFLICT ("${id}") DO NOTHING`
+  return `INSERT INTO ${tableName} (${keys.join(',')}) VALUES ${parsed.join(',')} ON CONFLICT ("${id}") DO NOTHING`
 }
 
 module.exports = {

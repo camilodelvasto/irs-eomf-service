@@ -8,17 +8,39 @@ chai.use(chaiHttp);
 const app = require('../../../index');
 const knex = require('../../../config/pg');
 
+// Get and configure library for managing migrations.
+var db = require('../../db/models')
+const Umzug = require('umzug');
+const umzugConf = require('../../../config/umzug')
+const umzug = new Umzug(umzugConf);
+var seed = require('../nonprofits.seed')
+
+
 describe('routes : update', function() {
   // This is needed as downloading the large files will take several minutes.
   this.timeout(150000);
 
-  before(async () => {
-    return knex.migrate.rollback()
-    .then(() => { return knex.migrate.latest(); })
+  before((done) => {
+    umzug.up()
+      .then(async function (migrations) {
+        seed.down(db.sequelize.getQueryInterface())
+          .then(() => {
+            done()
+          })
+        })
+      .catch (err => {
+        console.log(err)
+      })
   });
 
-  after(() => {
-    return knex.migrate.rollback();
+  after((done) => {
+    umzug.down({ to: 0 })
+      .then(function (migrations) {
+        done()
+      })
+      .catch (err => {
+        console.log(err)
+      });
   });
 
   it('should reject the connection if not authorized via token bearer ', (done) => {

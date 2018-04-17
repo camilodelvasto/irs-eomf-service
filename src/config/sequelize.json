@@ -6,7 +6,15 @@
     "host": "127.0.0.1",
     "port": "5432",
     "operatorsAliases": "Op",
-    "dialect": "postgres"
+    "dialect": "postgres",
+    "connectionTimeout": 0,
+    "pool":{
+      "max": 100,
+      "min": 1,
+      "idle": 200000,
+      "acquire": 200000
+    },
+    "logging": false
   },
   "test": {
     "username": "koa",
