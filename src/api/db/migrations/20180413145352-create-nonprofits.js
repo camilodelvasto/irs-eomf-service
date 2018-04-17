@@ -60,6 +60,10 @@ module.exports = {
       SORT_NAME: {
         type: Sequelize.STRING
       },
+      validated: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
