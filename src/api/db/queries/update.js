@@ -1,4 +1,3 @@
-const knex = require('../connection');
 const queries = require('../../db/queries/nonprofits');
 const IRSDataParser = require('../../utils/IRSDataParser');
 const request = require('request');
@@ -19,7 +18,7 @@ function compareBatch(index, batchCount) {
 
       // Remove all nonprofits with a non 1 deductibility code.
       var newBatch = batch.filter(nonprofit => {
-        return nonprofit.DEDUCTIBILITY === 1
+        return (nonprofit.DEDUCTIBILITY === 1)
       })
 
       newBatch.forEach(nonprofit => {
@@ -43,7 +42,7 @@ function compareBatch(index, batchCount) {
         delete nonprofit.SUBSECTION
       })
 
-      return sequelize.query(queries.batchUpsert('nonprofits', newBatch, 'EIN'))
+      sequelize.query(queries.batchUpsert('nonprofits', newBatch, 'EIN'))
         .then(() => {
           // Resolve promise and return true if this was the last batch to process.
           if (index === batchCount) {
@@ -126,7 +125,7 @@ function fetchCSVFile(req, a1) {
         if (arr.length === 500) {
           temp = arr;
           arr = [];
-          return sequelize.query(queries.batchUpsert('new_nonprofits', temp, 'EIN'))
+          sequelize.query(queries.batchUpsert('new_nonprofits', temp, 'EIN'))
               .then(() => {
                 temp = [];
               })
@@ -141,14 +140,26 @@ function fetchCSVFile(req, a1) {
               .then(() => {
                 arr = [];
                 process.nextTick(function() {
-                  resolve(knex('new_nonprofits').count('*'))
+                  return db['new_nonprofits'].count()
+                    .then(count => {
+                      resolve(count)
+                    })
+                    .catch ((err) => {
+                      console.log(err)
+                    })
                 })
               })
               .catch(err => {
                 console.log(err, null);
               });
           } else {
-            resolve(knex('new_nonprofits').count('*'));
+            return db['new_nonprofits'].count()
+              .then(count => {
+                resolve(count)
+              })
+              .catch ((err) => {
+                console.log(err)
+              })
         }
       })
       .on('error', err => {

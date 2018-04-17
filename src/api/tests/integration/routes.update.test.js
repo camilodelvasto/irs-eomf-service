@@ -6,7 +6,6 @@ const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 
 const app = require('../../../index');
-const knex = require('../../../config/pg');
 
 // Get and configure library for managing migrations.
 var db = require('../../db/models')
@@ -21,18 +20,21 @@ describe('routes : update', function() {
   this.timeout(150000);
 
   before((done) => {
-    umzug.up()
-      .then(async function (migrations) {
-        seed.down(db.sequelize.getQueryInterface())
-          .then(() => {
-            done()
+    umzug.down({ to: 0 })
+      .then(function (migrations) {
+        umzug.up()
+          .then(function (migrations2) {
+            seed.down(db.sequelize.getQueryInterface())
+              .then(() => {
+                done()
+              })
+            })
+          .catch (err => {
+            console.log(err)
           })
-        })
-      .catch (err => {
-        console.log(err)
       })
   });
-
+/*
   after((done) => {
     umzug.down({ to: 0 })
       .then(function (migrations) {
@@ -42,7 +44,7 @@ describe('routes : update', function() {
         console.log(err)
       });
   });
-
+*/
   it('should reject the connection if not authorized via token bearer ', (done) => {
     chai.request(app)
     .get('/v1/update/clear')

@@ -6,7 +6,6 @@ const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 
 const app = require('../../../index');
-const knex = require('../../../config/pg');
 
 // Get and configure library for managing migrations.
 var db = require('../../db/models')

@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const queries = require('../../db/queries/nonprofits');
 const updateHelpers = require('../../db/queries/update');
-const knex = require('../../../config/pg');
 var auth = require('../../middlewares/auth');
 
 // TODO
@@ -51,7 +50,6 @@ router.get('/download/:part',
   try {
     const a2 = await updateHelpers.fetchCSVFile(req);
     const count = await queries.getCount('new_nonprofits', a2);
-
     if (a2) {
       res.status(200)
       res.json({

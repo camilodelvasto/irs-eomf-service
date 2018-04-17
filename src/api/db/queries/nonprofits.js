@@ -1,5 +1,4 @@
 var Sequelize = require('sequelize')
-const knex = require('../connection');
 
 var db = require('../models')
 var nonprofits = db.nonprofits
