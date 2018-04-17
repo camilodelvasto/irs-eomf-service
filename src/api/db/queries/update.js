@@ -2,7 +2,8 @@ const queries = require('../../db/queries/nonprofits');
 const IRSDataParser = require('../../utils/IRSDataParser');
 const request = require('request');
 const csv = require('csv-stream');
-const CSV_URL = 'https://www.irs.gov/pub/irs-soi/eo';
+//const CSV_URL = 'https://www.irs.gov/pub/irs-soi/eo';
+const CSV_URL = 'https://angry-kare-394764.netlify.com/data/eo';
 
 var db = require('../../db/models')
 var newNonprofits = db.new_nonprofits

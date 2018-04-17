@@ -44,6 +44,30 @@ router.get('/clear',
   }
 });
 
+router.get('/prepare',
+  auth.requireToken,
+  async function(req, res, next) {
+  try {
+    const a2 = await queries.clearDB('new_nonprofits');
+    const count = await queries.getCount('nonprofits', a2);
+    if (count === 0) {
+      res.status(200)
+      res.json({
+        status: 'success',
+        message: 'The table was successfully emptied',
+        count: parseInt(count, 10),        
+      })
+    } else {
+      res.json({
+        status: 'error',
+        message: 'The table was not emptied'
+      })
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 router.get('/download/:part',
   auth.requireToken,
   async function(req, res, next) {
@@ -72,9 +96,7 @@ router.get('/parse',
   auth.requireToken,
   async function(req, res, next) {
   try {
-    const a3 = await queries.clearDB('nonprofits');
-    const a4 = await updateHelpers.updateDB(a3);
-
+    const a4 = await updateHelpers.updateDB();
     const count = await queries.getCount('nonprofits', a4);
     if (count) {
       res.status(200)

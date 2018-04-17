@@ -121,7 +121,7 @@ function batchUpsert(tableName, data, id) {
     parsed.push(`(${values.join(',')})`)
   })
 
-  return `INSERT INTO ${tableName} (${keys.join(',')}) VALUES ${parsed.join(',')} ON CONFLICT ("${id}") DO NOTHING`
+  return `INSERT INTO ${tableName} (${keys.join(',')}) VALUES ${parsed.join(',')} ON CONFLICT ("${id}") DO UPDATE SET "updatedAt" = CURRENT_TIMESTAMP`
 }
 
 module.exports = {
