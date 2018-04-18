@@ -153,7 +153,21 @@ describe('routes : update', function() {
     });
   });
 
-  it('should download a newer file and return 3429 records', (done) => {
+  it('should count 2400 revoked nonprofits', (done) => {
+    chai.request(app)
+    .get('/v1/update/revoked/count')
+    .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
+    .end((err, res) => {
+      should.not.exist(err);
+      res.status.should.equal(200);
+      res.type.should.equal('application/json');
+      res.body.count.should.eql(2400);
+      done();
+    });
+  });
+
+
+  it('should download a newer file and return 3461 records', (done) => {
     chai.request(app)
     .get('/v1/update/download/4')
     .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
@@ -168,7 +182,7 @@ describe('routes : update', function() {
     });
   });
 
-  it('should parse the newer large file and return 2408 total records', (done) => {
+  it('should parse the newer large file and return 2511 total records', (done) => {
     chai.request(app)
     .get('/v1/update/parse')
     .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
@@ -183,7 +197,20 @@ describe('routes : update', function() {
     });
   });
 
-  it('should return a list of revoked nonprofits', (done) => {
+  it('should count 168 revoked nonprofits', (done) => {
+    chai.request(app)
+    .get('/v1/update/revoked/count')
+    .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
+    .end((err, res) => {
+      should.not.exist(err);
+      res.status.should.equal(200);
+      res.type.should.equal('application/json');
+      res.body.count.should.equal(168);
+      done();
+    });
+  });
+
+  it('should return 10 revoked nonprofits', (done) => {
     chai.request(app)
     .get('/v1/update/revoked')
     .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
