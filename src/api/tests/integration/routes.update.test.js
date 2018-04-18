@@ -44,7 +44,7 @@ describe('routes : update', function() {
           })
       })
   });
-/*
+
   after((done) => {
     umzug.down({ to: 0 })
       .then(() => {
@@ -54,7 +54,7 @@ describe('routes : update', function() {
         console.log(err)
       });
   });
-*/
+
   it('should reject the connection if not authorized via token bearer ', (done) => {
     chai.request(app)
     .get('/v1/update/clear')
@@ -219,6 +219,20 @@ describe('routes : update', function() {
       res.status.should.equal(200);
       res.type.should.equal('application/json');
       res.body.length.should.equal(10);
+      done();
+    });
+  });
+
+  it('should return 168 revoked nonprofits with EIN and last updated date', (done) => {
+    chai.request(app)
+    .get('/v1/update/revoked/list')
+    .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
+    .end((err, res) => {
+      should.not.exist(err);
+      res.status.should.equal(200);
+      res.type.should.equal('application/json');
+      res.body.length.should.equal(168);
+      res.body[0].should.include.keys('EIN', 'updatedAt');
       done();
     });
   });
