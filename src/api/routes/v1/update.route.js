@@ -5,10 +5,10 @@ const updateHelpers = require('../../db/queries/update');
 var auth = require('../../middlewares/auth');
 
 // TODO
+// prevent the nonprofits to be validated if only one day has passed since the previous update (using updatedAt)
 // - use socket IO to update client while performing the updates: wishlist
-// - compare and create diff for endpoint
-// prevent the process to start over again if the request is repeated (also, do not download the files)
-// - repeat for all the 4 files
+// prevent the process to start over again if the request is repeated (also, do not download the files, or revert the migration if not completed)
+// - repeat for all the 4 files: to be done at the master system
 
 const timeout = require('connect-timeout');
 
@@ -101,6 +101,19 @@ router.get('/revoked',
   async function(req, res, next) {
     try {
       const response = await queries.getRevoked(req.query.page, req.query.posts_per_page);
+      res.status(200)
+      res.json(response)
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+router.get('/revoked/list',
+  auth.requireToken,
+  async function(req, res, next) {
+    try {
+      const response = await queries.getRevokedList();
       res.status(200)
       res.json(response)
     } catch (err) {

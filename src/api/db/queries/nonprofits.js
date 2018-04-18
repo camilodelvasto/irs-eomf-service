@@ -115,6 +115,26 @@ async function getRevokedCount() {
   })
 }
 
+async function getRevokedList() {
+  return new Promise(resolve => {
+    db['nonprofits'].findAll({
+      attributes: [
+        "EIN",
+        "updatedAt"
+      ],
+      where: {
+        validated: false
+      }
+    })
+      .then(count => {
+        resolve(count)
+      })
+      .catch ((err) => {
+        console.log(err)
+      })
+  })
+}
+
 function clearDB(tableName) {
   return new Promise(resolve => {
     // prepare the table for the import
@@ -162,6 +182,7 @@ module.exports = {
   getCount,
   getRevoked,
   getRevokedCount,
+  getRevokedList,
   clearDB
 };
 
