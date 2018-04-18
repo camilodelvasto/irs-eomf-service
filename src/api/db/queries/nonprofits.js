@@ -18,6 +18,20 @@ async function getNonprofits(page = 1, postsPerPage = 10) {
   }
 }
 
+async function getRevoked(page = 1, postsPerPage = 10) {
+  try {
+    // Sanitize inputs
+    let {offset, limit} = standardizeParams(page, postsPerPage)
+
+    // Perform queries
+    var query = await nonprofits.findAll({ limit: limit, offset: offset, where: { validated: false } })
+
+    return query
+  } catch (err) {
+    console.log(err)
+  }
+}
+
 async function getSingleNonprofit(ein) {
   try {
     if (isNaN(ein)) {
@@ -85,6 +99,22 @@ async function getCount(tableName) {
   })
 }
 
+async function getRevokedCount() {
+  return new Promise(resolve => {
+    db['nonprofits'].count({
+      where: {
+        validated: false
+      }
+    })
+      .then(count => {
+        resolve(count)
+      })
+      .catch ((err) => {
+        console.log(err)
+      })
+  })
+}
+
 function clearDB(tableName) {
   return new Promise(resolve => {
     // prepare the table for the import
@@ -130,6 +160,8 @@ module.exports = {
   getSingleNonprofit,
   getNonprofitByName,
   getCount,
+  getRevoked,
+  getRevokedCount,
   clearDB
 };
 

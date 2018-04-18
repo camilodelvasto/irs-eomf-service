@@ -38,4 +38,5 @@ router.get('/search/:query', async function(req, res, next) {
     next(err);
   }
 });
+
 module.exports = router;

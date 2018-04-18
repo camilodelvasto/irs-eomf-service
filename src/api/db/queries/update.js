@@ -126,20 +126,20 @@ function fetchCSVFile(req, a1) {
           temp = arr;
           arr = [];
           sequelize.query(queries.batchUpsert('new_nonprofits', temp, 'EIN'))
-              .then(() => {
-                temp = [];
-              })
-              .catch(err => {
-                console.log(err, null);
-              });
+            .then((x) => {
+              temp = [];
+            })
+            .catch(err => {
+              console.log(err, null);
+            });
           }
         })
         .on('end', () => {
           if (arr.length) {
             sequelize.query(queries.batchUpsert('new_nonprofits', arr, 'EIN'))
-              .then(() => {
+              .then((x) => {
                 arr = [];
-                process.nextTick(function() {
+                setTimeout(function() {
                   return db['new_nonprofits'].count()
                     .then(count => {
                       resolve(count)
@@ -147,7 +147,7 @@ function fetchCSVFile(req, a1) {
                     .catch ((err) => {
                       console.log(err)
                     })
-                })
+                }, 100)
               })
               .catch(err => {
                 console.log(err, null);

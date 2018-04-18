@@ -13,7 +13,8 @@
       "min": 1,
       "idle": 200000,
       "acquire": 200000
-    }
+    },
+    "logging": false
   },
   "test": {
     "username": "koa",
@@ -29,7 +30,8 @@
       "min": 1,
       "idle": 200000,
       "acquire": 200000
-    }
+    },
+    "logging": false
   },
   "production": {
     "username": "update me",
