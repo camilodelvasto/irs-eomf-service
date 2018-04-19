@@ -29,17 +29,6 @@ function compareBatch(index, batchCount) {
         delete nonprofit.createdAt
         delete nonprofit.updatedAt
         delete nonprofit.id
-        delete nonprofit.ICO
-        delete nonprofit.STATUS
-        delete nonprofit.TAX_PERIOD
-        delete nonprofit.ASSET_CD
-        delete nonprofit.INCOME_CD
-        delete nonprofit.FILING_REQ_CD
-        delete nonprofit.PF_FILING_REQ_CD
-        delete nonprofit.ACCT_PD
-        delete nonprofit.FOUNDATION
-        delete nonprofit.ORGANIZATION
-        delete nonprofit.SUBSECTION
       })
 
       sequelize.query(queries.batchUpsert('nonprofits', newBatch, 'EIN'))

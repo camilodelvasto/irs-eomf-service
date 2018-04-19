@@ -8,7 +8,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       EIN: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.INTEGER,
         allowNull: false,
         unique: true
       },

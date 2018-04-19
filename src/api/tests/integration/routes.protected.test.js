@@ -24,7 +24,7 @@ var serveStatic = require('serve-static')
 
 var demoDataServer = {}
 
-describe('routes : update', function() {
+describe('routes : protected', function() {
   // This is needed as downloading the large files will take several minutes.
   this.timeout(150000);
 
@@ -58,10 +58,9 @@ describe('routes : update', function() {
     demoDataServer.close()
   });
 
-
   it('should reject the connection if not authorized via token bearer ', (done) => {
     chai.request(app)
-    .get('/v1/update/clear')
+    .get('/v1/protected/nonprofits')
     .set('Authorization', 'Bearer ndsvn2g8dnsb9hs')
     .end((err, res) => {
       should.exist(err);
@@ -70,29 +69,13 @@ describe('routes : update', function() {
     });
   });
 
+  // Starting here, these tests are not for this endpoint but just preparing the setup for the correct tests.
+  // No need to assert anything here.
   it('should clear the DB and return 0 records', (done) => {
     chai.request(app)
     .get('/v1/update/clear')
     .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
     .end((err, res) => {
-      should.not.exist(err);
-      res.status.should.equal(200);
-      res.type.should.equal('application/json');
-      res.body.status.should.eql('success');
-      res.body.message.should.eql('The table was successfully emptied');
-      done();
-    });
-  });
-
-  it('should import nothing if the URL part does not exist', (done) => {
-    chai.request(app)
-    .get('/v1/update/download/0')
-    .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
-    .end((err, res) => {
-      res.status.should.equal(200);
-      res.type.should.equal('application/json');
-      res.body.status.should.eql('error');
-      res.body.message.should.eql('Import was not completed/bad request');
       done();
     });
   });
@@ -102,12 +85,6 @@ describe('routes : update', function() {
     .get('/v1/update/download/1')
     .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
     .end((err, res) => {
-      should.not.exist(err);
-      res.status.should.equal(200);
-      res.type.should.equal('application/json');
-      res.body.status.should.eql('success');
-      res.body.message.should.eql('Import performed successfully');
-      res.body.count.should.eql(9);
       done();
     });
   });
@@ -117,12 +94,6 @@ describe('routes : update', function() {
     .get('/v1/update/parse')
     .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
     .end((err, res) => {
-      should.not.exist(err);
-      res.status.should.equal(200);
-      res.type.should.equal('application/json');
-      res.body.status.should.eql('success');
-      res.body.message.should.eql('Update performed successfully');
-      res.body.count.should.eql(8);
       done();
     });
   });
@@ -132,12 +103,6 @@ describe('routes : update', function() {
     .get('/v1/update/download/3')
     .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
     .end((err, res) => {
-      should.not.exist(err);
-      res.status.should.equal(200);
-      res.type.should.equal('application/json');
-      res.body.status.should.eql('success');
-      res.body.message.should.eql('Import performed successfully');
-      res.body.count.should.eql(3429);
       done();
     });
   });
@@ -147,12 +112,6 @@ describe('routes : update', function() {
     .get('/v1/update/parse')
     .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
     .end((err, res) => {
-      should.not.exist(err);
-      res.status.should.equal(200);
-      res.type.should.equal('application/json');
-      res.body.status.should.eql('success');
-      res.body.message.should.eql('Update performed successfully');
-      res.body.count.should.eql(2408);
       done();
     });
   });
@@ -162,26 +121,15 @@ describe('routes : update', function() {
     .get('/v1/protected/revoked/count')
     .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
     .end((err, res) => {
-      should.not.exist(err);
-      res.status.should.equal(200);
-      res.type.should.equal('application/json');
-      res.body.count.should.eql(2400);
       done();
     });
   });
-
 
   it('should download a newer file and return 3461 records', (done) => {
     chai.request(app)
     .get('/v1/update/download/4')
     .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
     .end((err, res) => {
-      should.not.exist(err);
-      res.status.should.equal(200);
-      res.type.should.equal('application/json');
-      res.body.status.should.eql('success');
-      res.body.message.should.eql('Import performed successfully');
-      res.body.count.should.eql(3461);
       done();
     });
   });
@@ -191,15 +139,10 @@ describe('routes : update', function() {
     .get('/v1/update/parse')
     .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
     .end((err, res) => {
-      should.not.exist(err);
-      res.status.should.equal(200);
-      res.type.should.equal('application/json');
-      res.body.status.should.eql('success');
-      res.body.message.should.eql('Update performed successfully');
-      res.body.count.should.eql(2511);
       done();
     });
   });
+  // Finishes here, now proceed with the protected tests.
 
   it('should count 168 revoked nonprofits', (done) => {
     chai.request(app)
@@ -223,20 +166,6 @@ describe('routes : update', function() {
       res.status.should.equal(200);
       res.type.should.equal('application/json');
       res.body.length.should.equal(10);
-      done();
-    });
-  });
-
-  it('should return 168 revoked nonprofits with EIN and last updated date', (done) => {
-    chai.request(app)
-    .get('/v1/protected/revoked/list')
-    .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
-    .end((err, res) => {
-      should.not.exist(err);
-      res.status.should.equal(200);
-      res.type.should.equal('application/json');
-      res.body.length.should.equal(168);
-      res.body[0].should.include.keys('EIN', 'updatedAt');
       done();
     });
   });

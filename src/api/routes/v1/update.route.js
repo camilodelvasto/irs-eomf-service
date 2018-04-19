@@ -96,46 +96,4 @@ router.get('/parse',
   }
 );
 
-router.get('/revoked',
-  auth.requireToken,
-  async function(req, res, next) {
-    try {
-      const response = await queries.getRevoked(req.query.page, req.query.posts_per_page);
-      res.status(200)
-      res.json(response)
-    } catch (err) {
-      next(err);
-    }
-  }
-);
-
-router.get('/revoked/list',
-  auth.requireToken,
-  async function(req, res, next) {
-    try {
-      const response = await queries.getRevokedList();
-      res.status(200)
-      res.json(response)
-    } catch (err) {
-      next(err);
-    }
-  }
-);
-
-router.get('/revoked/count',
-  auth.requireToken,
-  async function(req, res, next) {
-    try {
-      const count = await queries.getRevokedCount();
-      res.json({
-        status: 'success',
-        count: parseInt(count, 10),        
-      })
-    } catch (err) {
-      next(err);
-    }
-  }
-);
-
-
 module.exports = router;

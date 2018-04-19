@@ -1,0 +1,92 @@
+const express = require('express');
+const router = express.Router();
+const queries = require('../../db/queries/nonprofits');
+const updateHelpers = require('../../db/queries/update');
+var auth = require('../../middlewares/auth');
+
+// TODO
+// write test to ensure these routes are not publicly available: doing
+// create methods to get nonprofits and sort by income/revenue
+
+router.get('/nonprofits',
+  auth.requireToken,
+  async function(req, res, next) {
+    try {
+      const response = await queries.getNonprofits(req.query.page, req.query.posts_per_page, true);
+      res.status(200)
+      res.json(response)
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+router.get('/nonprofits/:ein',
+  auth.requireToken,
+  async function(req, res, next) {
+    try {
+      const response = await queries.getSingleNonprofit(req.params.ein, true);
+      res.status(200)
+      res.json(response)
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+router.get('/nonprofits/search/:query',
+  auth.requireToken,
+  async function(req, res, next) {
+    try {
+      const response = await queries.getNonprofitByName(req.params.query, req.query.page, req.query.posts_per_page, true)
+      res.status(200)
+      res.json(response)
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+router.get('/revoked',
+  auth.requireToken,
+  async function(req, res, next) {
+    try {
+      const response = await queries.getRevoked(req.query.page, req.query.posts_per_page, true);
+      res.status(200)
+      res.json(response)
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+router.get('/revoked/list',
+  auth.requireToken,
+  async function(req, res, next) {
+    try {
+      const response = await queries.getRevokedList();
+      res.status(200)
+      res.json(response)
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+router.get('/revoked/count',
+  auth.requireToken,
+  async function(req, res, next) {
+    try {
+      const count = await queries.getRevokedCount();
+      res.json({
+        status: 'success',
+        count: parseInt(count, 10),        
+      })
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+
+module.exports = router;

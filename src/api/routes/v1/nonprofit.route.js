@@ -8,6 +8,9 @@ const Umzug = require('umzug');
 const umzugConf = require('../../../config/umzug')
 const umzug = new Umzug(umzugConf);
 
+// TODO
+// send only some fields for public endpoints: EIN, name, others...: DONE
+// send all fields for protected endpoint: doing...
 // Should return a reduced list of 10 nonprofits and the number of pages depending on the posts_per_page parameter.
 router.get('/', async function(req, res, next) {
     try {

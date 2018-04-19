@@ -4,13 +4,31 @@ var db = require('../models')
 var nonprofits = db.nonprofits
 const Op = Sequelize.Op;
 
-async function getNonprofits(page = 1, postsPerPage = 10) {
+const attr = [
+  "EIN",
+  "NAME",
+  "STREET",
+  "CITY",
+  "STATE",
+  "ZIP",
+  "ACTIVITY",
+  "NTEE_CD",
+  "SORT_NAME",
+  "validated"
+]
+
+
+async function getNonprofits(page = 1, postsPerPage = 10, allFields = false) {
   try {
     // Sanitize inputs
     let {offset, limit} = standardizeParams(page, postsPerPage)
 
     // Perform queries
-    var query = await nonprofits.findAll({ limit: limit, offset: offset })
+    var query = await nonprofits.findAll({
+      attributes: allFields ? '' : attr,
+      limit: limit,
+      offset: offset
+    })
 
     return query
   } catch (err) {
@@ -18,13 +36,20 @@ async function getNonprofits(page = 1, postsPerPage = 10) {
   }
 }
 
-async function getRevoked(page = 1, postsPerPage = 10) {
+async function getRevoked(page = 1, postsPerPage = 10, allFields = false) {
   try {
     // Sanitize inputs
     let {offset, limit} = standardizeParams(page, postsPerPage)
 
     // Perform queries
-    var query = await nonprofits.findAll({ limit: limit, offset: offset, where: { validated: false } })
+    var query = await nonprofits.findAll({
+      attributes: allFields ? '' : attr,
+      limit: limit,
+      offset: offset,
+      where: {
+        validated: false
+      }
+    })
 
     return query
   } catch (err) {
@@ -32,12 +57,13 @@ async function getRevoked(page = 1, postsPerPage = 10) {
   }
 }
 
-async function getSingleNonprofit(ein) {
+async function getSingleNonprofit(ein, allFields = false) {
   try {
     if (isNaN(ein)) {
       return []
     }
     var query = await nonprofits.findAll({
+      attributes: allFields ? '' : attr,
       where: {
         EIN: parseInt(ein, 10)
       }
@@ -49,7 +75,7 @@ async function getSingleNonprofit(ein) {
   }
 }
 
-async function getNonprofitByName(query, page = 1, postsPerPage = 10) {
+async function getNonprofitByName(query, page = 1, postsPerPage = 10, allFields = false) {
   try {
     // Sanitize inputs
     let {offset, limit} = standardizeParams(page, postsPerPage)
@@ -58,6 +84,7 @@ async function getNonprofitByName(query, page = 1, postsPerPage = 10) {
     const upQuery = query.toUpperCase();
 
     var query = await nonprofits.findAll({
+      attributes: allFields ? '' : attr,
       where: {
         [Op.or]: [
           {
@@ -120,6 +147,7 @@ async function getRevokedList() {
     db['nonprofits'].findAll({
       attributes: [
         "EIN",
+        "validated",
         "updatedAt"
       ],
       where: {

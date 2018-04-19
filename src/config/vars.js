@@ -11,5 +11,6 @@ module.exports = {
   port: process.env.PORT,
   apiKey: process.env.API_KEY,
   irsEOMFUrl: process.env.irsEOMFUrl,
+  demoDataPort: process.env.demoDataPort,
   logs: process.env.NODE_ENV === 'production' ? 'combined' : 'dev',
 };
