@@ -57,6 +57,26 @@ async function getRevoked(page = 1, postsPerPage = 10, allFields = false) {
   }
 }
 
+async function getNonprofitsCustom(page = 1, postsPerPage = 10, sort_by = 'REVENUE_AMT', order = 'DESC') {
+  try {
+    // Sanitize inputs
+    let {offset, limit} = standardizeParams(page, postsPerPage)
+
+    // Perform queries
+    var query = await nonprofits.findAll({
+      limit: limit,
+      offset: offset,
+      order: [
+        [`${sort_by.toUpperCase()}`, `${order}`]
+      ]
+    })
+
+    return query
+  } catch (err) {
+    console.log(err)
+  }
+}
+
 async function getSingleNonprofit(ein, allFields = false) {
   try {
     if (isNaN(ein)) {
@@ -226,6 +246,7 @@ module.exports = {
   getCount,
   deleteRevoked,
   getRevoked,
+  getNonprofitsCustom,
   getRevokedCount,
   getRevokedList,
   clearDB

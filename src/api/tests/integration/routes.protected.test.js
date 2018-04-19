@@ -196,5 +196,19 @@ describe('routes : protected', function() {
     });
   });
 
+  it('should return nonprofits ordered by income, descending', (done) => {
+    chai.request(app)
+    .get('/v1/protected/custom/?posts_per_page=2&order=DESC&sort_by="income_amt')
+    .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
+    .end((err, res) => {
+      should.not.exist(err);
+      res.status.should.equal(200);
+      res.type.should.equal('application/json');
+      res.body.length.should.equal(2);
+      parseInt(res.body[0]['INCOME_AMT'], 10).should.be.above(parseInt(res.body[1]['INCOME_AMT'], 10));
+      done();
+    });
+  });
+
 });
 

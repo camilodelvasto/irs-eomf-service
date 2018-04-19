@@ -5,9 +5,7 @@ const updateHelpers = require('../../db/queries/update');
 var auth = require('../../middlewares/auth');
 
 // TODO
-// write test to ensure these routes are not publicly available: doing
 // create methods to get nonprofits and sort by income/revenue
-// create route to remove all revoked nonprofits
 
 router.get('/nonprofits',
   auth.requireToken,
@@ -40,6 +38,19 @@ router.get('/nonprofits/search/:query',
   async function(req, res, next) {
     try {
       const response = await queries.getNonprofitByName(req.params.query, req.query.page, req.query.posts_per_page, true)
+      res.status(200)
+      res.json(response)
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+router.get('/custom',
+  auth.requireToken,
+  async function(req, res, next) {
+    try {
+      const response = await queries.getNonprofitsCustom(req.query.page, req.query.posts_per_page, req.query.sort_by, req.query.order);
       res.status(200)
       res.json(response)
     } catch (err) {
