@@ -53,25 +53,22 @@ function batchVectorQuery(tableName, data, id) {
 // 6112166
 
   var parsed = [];
-  var keys = [
-    "NAME",
-    "SORT_NAME",
-    "CITY",
-    "ACTIVITY"
-  ];
-  for (var key in data[0]) {
-    keys.push(`"${key}"`)
+  var weights = {
+    NAME: "A",
+    SORT_NAME: "B",
+    CITY: "C",
+    ACTIVITY: "D"
   }
   data.forEach(nonprofit => {
     var values = []
-    keys.forEach((key) => {
-      values.push(key)
-    })
-    parsed.push(`(to_tsvector('english','${nonprofit["NAME"]}'), ${nonprofit["EIN"]})`)
-    //${values.join(',')})`)
+    for (var k in weights) {
+      if (nonprofit[k]) {
+        values.push(`setweight(to_tsvector('english','${nonprofit[k]}'), '${weights[k]}')`)
+      }
+    }
+    parsed.push(`(${values.join('||')}, ${nonprofit["EIN"]})`)
   })
 
-//  return 'INSERT INTO phraseTable VALUES (to_tsvector('english','The big blue elephant jumped over the crippled blue dolphin.'));'
   return `INSERT INTO ${tableName} VALUES ${parsed.join(',')} ON CONFLICT ("${id}") DO NOTHING`
 }
 

@@ -101,6 +101,7 @@ router.get('/tsvectors',
   auth.requireToken,
   async function(req, res, next) {
     try {
+      const a3 = await queries.clearDB('nonprofits_vectors');
       const a4 = await search.createVectors();
       const count = await queries.getCount('nonprofits_vectors', a4);
       if (count) {
