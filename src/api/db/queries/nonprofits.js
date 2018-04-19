@@ -163,6 +163,22 @@ async function getRevokedList() {
   })
 }
 
+function deleteRevoked() {
+  return new Promise(resolve => {
+    db['nonprofits'].destroy({
+      where: {
+        validated: false
+      }
+    })
+      .then(count => {
+        resolve(count)
+      })
+      .catch ((err) => {
+        console.log(err)
+      })
+  });
+}
+
 function clearDB(tableName) {
   return new Promise(resolve => {
     // prepare the table for the import
@@ -208,6 +224,7 @@ module.exports = {
   getSingleNonprofit,
   getNonprofitByName,
   getCount,
+  deleteRevoked,
   getRevoked,
   getRevokedCount,
   getRevokedList,

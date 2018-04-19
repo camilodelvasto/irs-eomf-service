@@ -7,6 +7,7 @@ var auth = require('../../middlewares/auth');
 // TODO
 // write test to ensure these routes are not publicly available: doing
 // create methods to get nonprofits and sort by income/revenue
+// create route to remove all revoked nonprofits
 
 router.get('/nonprofits',
   auth.requireToken,
@@ -67,6 +68,22 @@ router.get('/revoked/list',
       const response = await queries.getRevokedList();
       res.status(200)
       res.json(response)
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+router.get('/revoked/delete',
+  auth.requireToken,
+  async function(req, res, next) {
+    try {
+      const count = await queries.deleteRevoked();
+      res.status(200)
+      res.json({
+        status: 'success',
+        count: count
+      })
     } catch (err) {
       next(err);
     }

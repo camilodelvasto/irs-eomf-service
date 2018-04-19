@@ -170,5 +170,31 @@ describe('routes : protected', function() {
     });
   });
 
+  it('should delete all the revoked nonprofits', (done) => {
+    chai.request(app)
+    .get('/v1/protected/revoked/delete')
+    .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
+    .end((err, res) => {
+      should.not.exist(err);
+      res.status.should.equal(200);
+      res.type.should.equal('application/json');
+      res.body.count.should.equal(168);
+      done();
+    });
+  });
+
+  it('should count 0 revoked nonprofits after delete method is called', (done) => {
+    chai.request(app)
+    .get('/v1/protected/revoked/count')
+    .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
+    .end((err, res) => {
+      should.not.exist(err);
+      res.status.should.equal(200);
+      res.type.should.equal('application/json');
+      res.body.count.should.equal(0);
+      done();
+    });
+  });
+
 });
 
