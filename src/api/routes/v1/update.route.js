@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const queries = require('../../db/queries/nonprofits');
 const updateHelpers = require('../../db/queries/update');
+const search = require('../../db/queries/search');
 var auth = require('../../middlewares/auth');
 
 // TODO
@@ -88,6 +89,31 @@ router.get('/parse',
         res.json({
           status: 'error',
           message: 'Update was not completed'
+        })
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+);
+
+router.get('/tsvectors',
+  auth.requireToken,
+  async function(req, res, next) {
+    try {
+      const a4 = await search.createVectors();
+      const count = await queries.getCount('nonprofits_vectors', a4);
+      if (count) {
+        res.status(200)
+        res.json({
+          status: 'success',
+          message: 'Indexing performed successfully',
+          count: parseInt(count, 10),        
+        })
+      } else {
+        res.json({
+          status: 'error',
+          message: 'Indexing was not completed'
         })
       }
     } catch (err) {

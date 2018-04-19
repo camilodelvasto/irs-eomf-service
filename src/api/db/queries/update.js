@@ -1,4 +1,4 @@
-const queries = require('../../db/queries/nonprofits');
+const queries = require('./nonprofits');
 const IRSDataParser = require('../../utils/IRSDataParser');
 const request = require('request');
 const csv = require('csv-stream');

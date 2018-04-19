@@ -18,8 +18,7 @@ module.exports = {
     pattern: /\.js$/
   },
 
-  logging: false
-/*  logging: function() {
+  logging: function() {
     console.log.apply(null, arguments);
-  } */
+  }
 }
