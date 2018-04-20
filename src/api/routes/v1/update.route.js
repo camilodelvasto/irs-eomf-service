@@ -25,8 +25,9 @@ router.get('/clear',
   async function(req, res, next) {
     try {
       const a2 = await queries.clearDB('nonprofits');
-      const a3 = await queries.clearDB('new_nonprofits');
-      const count = await queries.getCount('nonprofits', a3);
+      const a3 = await queries.clearDB('new_nonprofits', a2);
+      const a4 = await queries.clearDB('nonprofits_vectors', a3);
+      const count = await queries.getCount('nonprofits', a4);
       if (count === 0) {
         res.status(200)
         res.json({

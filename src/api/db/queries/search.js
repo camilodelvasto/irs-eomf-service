@@ -8,12 +8,18 @@ function createVectors() {
   return new Promise(async resolve => {
     try {
       var count = await queries.getCount('nonprofits')
-      var batchSize = 2
+      var batchSize = 1000
       var batchCount = Math.ceil(count / batchSize)
       for (var i = 0; i < batchCount; i++) {
         var test = await createVectorBatch(i, batchCount - 1)
         if (test) {
-          resolve()
+          sequelize.query('CREATE INDEX nonprofits_trgm_idx ON nonprofits_vectors USING gin ("TRIGRAM" gin_trgm_ops);')
+          .then(() => {
+            resolve()
+          })
+          .catch(err => {
+            console.log(err)
+          })
         }
       }
     } catch (err) {
@@ -25,7 +31,7 @@ function createVectors() {
 function createVectorBatch(index, batchCount) {
   return new Promise(async resolve => {
     try {
-      var batchSize = 2
+      var batchSize = 1000
       var batch = await db.nonprofits.findAll({ limit: batchSize, offset: batchSize * index, raw: true })
 
       sequelize.query(batchVectorQuery('nonprofits_vectors', batch, 'EIN'))
@@ -48,10 +54,6 @@ function createVectorBatch(index, batchCount) {
 }
 
 function batchVectorQuery(tableName, data, id) {
-
-//  sequelize.query(`INSERT INTO nonprofits_vectors VALUES (to_tsvector('english','The big blue elephant jumped over the crippled blue dolphin.'));`)
-// 6112166
-
   var parsed = [];
   var weights = {
     NAME: "A",
@@ -61,28 +63,40 @@ function batchVectorQuery(tableName, data, id) {
   }
   data.forEach(nonprofit => {
     var values = []
+    var vectors = []
     for (var k in weights) {
-      if (nonprofit[k]) {
-        values.push(`setweight(to_tsvector('english','${nonprofit[k]}'), '${weights[k]}')`)
+      if (nonprofit[k] !== '' && nonprofit[k] !== 0 && nonprofit[k] !== '0') {
+        vectors.push(`setweight(to_tsvector('english','${nonprofit[k]}'), '${weights[k]}')`)
+        values.push(`${nonprofit[k]}`)
       }
     }
-    parsed.push(`(${values.join('||')}, ${nonprofit["EIN"]})`)
+    parsed.push(`(${vectors.join('||')}, ${nonprofit["EIN"]}, '${values.join(' ')}', '${nonprofit["NAME"]}')`)
   })
 
-  return `INSERT INTO ${tableName} VALUES ${parsed.join(',')} ON CONFLICT ("${id}") DO NOTHING`
+  return `INSERT INTO nonprofits_vectors VALUES ${parsed.join(',')} ON CONFLICT ("${id}") DO NOTHING`
 }
 
-
-function create() {
-  sequelize.query(`INSERT INTO nonprofits_vectors VALUES (to_tsvector('english','The big blue elephant jumped over the crippled blue dolphin.'));`)
+function getNonprofitByMatch(query) {
+  try {
+    var queryAsArray = query.split(' ')
+    return sequelize.query(`SELECT "EIN","NAME" FROM nonprofits_vectors WHERE "NONPROFIT_DATA" @@ to_tsquery('english','${queryAsArray.join(' & ')}') LIMIT 10;`, { type: sequelize.QueryTypes.SELECT })
+  } catch (err) {
+    console.log(err)
+  }
 }
 
-function deleteVectors() {
-  sequelize.query('')
+function getNonprofitByTrigram(query) {
+  try {
+    var queryAsArray = query.split(' ')
+    return sequelize.query(`SELECT "EIN","NAME" FROM nonprofits_vectors WHERE similarity("TRIGRAM", '${queryAsArray.join('+')}') > 0.15 LIMIT 10;`, { type: sequelize.QueryTypes.SELECT })
+  } catch (err) {
+    console.log(err)
+  }
 }
 
 module.exports = {
   createVectors,
-  deleteVectors
+  getNonprofitByMatch,
+  getNonprofitByTrigram
 };
 
