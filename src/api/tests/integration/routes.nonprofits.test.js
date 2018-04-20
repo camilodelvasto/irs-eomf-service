@@ -3,7 +3,6 @@ require('dotenv-safe').load({
   path: path.join(__dirname, '../../../../.env.test'),
 });
 
-
 const chai = require('chai');
 const should = chai.should();
 const chaiHttp = require('chai-http');
@@ -107,40 +106,6 @@ describe('routes : nonprofits', () => {
       should.not.exist(err);
       res.status.should.equal(200);
       res.body.length.should.eql(0);
-      done();
-    });
-  });
-
-  it('should find a nonprofit by partial name text match', (done) => {
-    chai.request(app)
-    .get('/v1/nonprofits/search/ameri')
-    .end((err, res) => {
-      should.not.exist(err);
-      res.status.should.equal(200);
-      res.body[0]['EIN'].should.equal(10018922);
-      done();
-    });
-  });
-
-  it('should find a nonprofit by partial SORT_NAME text match', (done) => {
-    chai.request(app)
-    .get('/v1/nonprofits/search/beta')
-    .end((err, res) => {
-      should.not.exist(err);
-      res.status.should.equal(200);
-      res.body[0]['EIN'].should.equal(10018555);
-      done();
-    });
-  });
-
-  it('should return 3 nonprofits by SORT_NAME text match split in two pages', (done) => {
-    chai.request(app)
-    .get('/v1/nonprofits/search/medical?posts_per_page=1&page=2')
-    .end((err, res) => {
-      should.not.exist(err);
-      res.status.should.equal(200);
-      res.type.should.equal('application/json');
-      res.body.length.should.equal(1);
       done();
     });
   });

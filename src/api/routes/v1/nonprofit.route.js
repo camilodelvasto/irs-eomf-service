@@ -46,20 +46,40 @@ router.get('/find/:query', async function(req, res, next) {
 
 router.get('/search/:query', async function(req, res, next) {
     try {
-      const match = await search.getNonprofitByMatch(req.params.query)
-      if (match.length < 1) {
-        const trigram = await search.getNonprofitByTrigram(req.params.query)
-        if (trigram.length) {
-          res.status(200)
-          res.json(trigram)
+      var q = req.params.query
+      // For short queries, use full text search
+      if (q.length < 5) {
+        const basic = await queries.getNonprofitByName(q)
+        if (basic.length < 1) {
+          const match = await search.getNonprofitByMatch(q)
+          if (match.length) {
+            res.status(200)
+            res.json(trigram)
+          } else {
+            const trigram = await search.getNonprofitByTrigram(q)
+            res.status(200)
+            res.json(trigram)
+          }
         } else {
-          const basic = await queries.getNonprofitByName(req.params.query)
           res.status(200)
           res.json(basic)
         }
       } else {
-        res.status(200)
-        res.json(match)        
+        const match = await search.getNonprofitByMatch(q)
+        if (match.length < 1) {
+          const trigram = await search.getNonprofitByTrigram(q)
+          if (trigram.length) {
+            res.status(200)
+            res.json(trigram)
+          } else {
+            const basic = await queries.getNonprofitByName(q)
+            res.status(200)
+            res.json(basic)
+          }
+        } else {
+          res.status(200)
+          res.json(match)
+        }
       }
 
     } catch (err) {
