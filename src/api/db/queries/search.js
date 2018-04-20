@@ -79,6 +79,9 @@ function batchVectorQuery(tableName, data, id) {
 function getNonprofitByMatch(query) {
   try {
     var queryAsArray = query.split(' ')
+    queryAsArray.forEach((word, index, arr) => {
+      arr[index] = word + ':*'
+    })
     return sequelize.query(`SELECT "EIN","NAME" FROM nonprofits_vectors WHERE "NONPROFIT_DATA" @@ to_tsquery('english','${queryAsArray.join(' & ')}') LIMIT 10;`, { type: sequelize.QueryTypes.SELECT })
   } catch (err) {
     console.log(err)
@@ -88,7 +91,7 @@ function getNonprofitByMatch(query) {
 function getNonprofitByTrigram(query) {
   try {
     var queryAsArray = query.split(' ')
-    return sequelize.query(`SELECT "EIN","NAME" FROM nonprofits_vectors WHERE similarity("TRIGRAM", '${queryAsArray.join('+')}') > 0.15 LIMIT 10;`, { type: sequelize.QueryTypes.SELECT })
+    return sequelize.query(`SELECT "EIN","NAME" FROM nonprofits_vectors WHERE similarity("TRIGRAM", '${queryAsArray.join('+')}') > 0.1 LIMIT 10;`, { type: sequelize.QueryTypes.SELECT })
   } catch (err) {
     console.log(err)
   }

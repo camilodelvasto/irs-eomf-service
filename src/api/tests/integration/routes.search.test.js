@@ -47,7 +47,7 @@ describe('routes : protected', function() {
   after((done) => {
     umzug.down({ to: 0 })
       .then(() => {
-//        done()
+        done()
       })
       .catch (err => {
         console.log(err)
@@ -108,38 +108,47 @@ describe('routes : protected', function() {
       done();
     });
   });
+
+  it('should create the search index', (done) => {
+    chai.request(app)
+    .get('/v1/update/tsvectors')
+    .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
+    .end((err, res) => {
+      done();
+    });
+  });
   // Finishes here, now proceed with the protected tests.
 
-  it('should find a nonprofit by partial name text match', (done) => {
+  it('should find a nonprofit by textual text match', (done) => {
     chai.request(app)
-    .get('/v1/nonprofits/search/ameri')
+    .get('/v1/nonprofits/search/acupuncture%20and%20oriental%20medicineassociation%20of%20alaska')
     .end((err, res) => {
       should.not.exist(err);
       res.status.should.equal(200);
-      res.body[0]['EIN'].should.equal(10018922);
+      res.body[0]['EIN'].should.equal(204106771);
       done();
     });
   });
 
   it('should find a nonprofit by partial SORT_NAME text match', (done) => {
     chai.request(app)
-    .get('/v1/nonprofits/search/beta')
+    .get('/v1/nonprofits/search/disabled%20veterans%20fajar')
     .end((err, res) => {
       should.not.exist(err);
       res.status.should.equal(200);
-      res.body[0]['EIN'].should.equal(10018555);
+      res.body[0]['EIN'].should.equal(237282008);
       done();
     });
   });
 
-  it('should return 3 nonprofits by SORT_NAME text match split in two pages', (done) => {
+  it('should find a nonprofit even when slightly misspelled', (done) => {
     chai.request(app)
-    .get('/v1/nonprofits/find/medical?posts_per_page=1&page=2')
+    .get('/v1/nonprofits/search/moravina')
     .end((err, res) => {
       should.not.exist(err);
       res.status.should.equal(200);
       res.type.should.equal('application/json');
-      res.body.length.should.equal(1);
+      res.body[0]['EIN'].should.equal(237334441);
       done();
     });
   });
