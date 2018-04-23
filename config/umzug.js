@@ -14,7 +14,7 @@ module.exports = {
         throw new Error('Migration tried to use old style "done" callback. Please upgrade to "umzug" and return a promise instead.');
       }
     ],
-    path: './src/api/db/migrations',
+    path: './api/db/migrations',
     pattern: /\.js$/
   },
 

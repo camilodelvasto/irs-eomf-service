@@ -1,0 +1,88 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: IRS/EOMF SearchApi
+# during dev, should point to your local machine
+host: localhost:1331
+# basePath prefixes all resource paths 
+basePath: /v1/
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /nonprofits:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: nonprofits
+    get:
+      description: Returns a list of nonprofits
+      # used as the method name of the controller
+      operationId: nonprofit
+      parameters:
+        - name: posts_per_page
+          in: query
+          description: The number of nonprofits to display per page (max 100)
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: The chosen page, depending on the number of posts_per_page
+          required: false
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/nonprofitsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /nonprofits/{ein}:
+    x-swagger-router-controller: nonprofitsEin
+    get:
+      description: Returns a nonprofit by EIN
+      # used as the method name of the controller
+      parameters:
+        - name: ein
+          in: path
+          description: The EIN of the nonprofit to look up
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/nonprofitsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /swagger:
+    x-swagger-pipe: swagger_raw
+# complex objects have schema definitions
+definitions:
+  nonprofitsResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string

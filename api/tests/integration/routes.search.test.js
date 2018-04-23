@@ -1,7 +1,7 @@
 // Mock env variables using .env.test file
 const path = require('path')
 require('dotenv-safe').load({
-  path: path.join(__dirname, '../../../../.env.test'),
+  path: path.join(__dirname, '../../../.env.test'),
 });
 
 const chai = require('chai');
@@ -24,7 +24,7 @@ var serveStatic = require('serve-static')
 
 var demoDataServer = {}
 
-describe('routes : protected', function() {
+describe('routes : search', function() {
   before((done) => {
     umzug.down({ to: 0 })
       .then(() => {

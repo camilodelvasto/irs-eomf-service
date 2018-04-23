@@ -1,6 +1,6 @@
 const path = require('path')
 require('dotenv-safe').load({
-  path: path.join(__dirname, '../../../../.env.test'),
+  path: path.join(__dirname, '../../../.env.test'),
 });
 
 const chai = require('chai');
