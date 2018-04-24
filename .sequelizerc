@@ -1,7 +1,17 @@
 var path = require('path');
+var dbConfig =  JSON.parse('{ "' + process.env.NODE_ENV + '" : ' +
+                                '{ ' +
+                                   '"username": \"' + process.env.dbUsername + '", ' +
+                                   '"password": "' + process.env.dbPassword + '", ' +
+                                   '"database": "' + process.env.database + '", ' +
+                                   '"host": "' + process.env.host + '", ' +
+                                   '"dialect": "' + process.env.dialect + '" ' +
+                                '}' +
+                           '}');
 
+dbConfig.config = __filename
 module.exports = {
-  'config': path.resolve('./src/config', 'sequelize.json'),
+  'config': dbConfig,
   'migrations-path': path.resolve('./src/api/db', 'migrations'),
   'models-path': path.resolve('./src/api/db', 'models'),
   'seeders-path': path.resolve('./src/api/db', 'seeders')
