@@ -98,7 +98,7 @@ router.get('/parse',
   }
 );
 
-router.get('/tsvectors',
+router.get('/index',
   auth.requireToken,
   async function(req, res, next) {
     try {

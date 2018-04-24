@@ -5,7 +5,7 @@ info:
 # during dev, should point to your local machine
 host: localhost:1331
 # basePath prefixes all resource paths 
-basePath: /v1/
+basePath: /v1
 # 
 schemes:
   # tip: remove http to make production-grade
@@ -24,7 +24,7 @@ paths:
     get:
       description: Returns a list of nonprofits
       # used as the method name of the controller
-      operationId: nonprofit
+      operationId: getNonprofits
       parameters:
         - name: posts_per_page
           in: query
@@ -48,10 +48,11 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
   /nonprofits/{ein}:
-    x-swagger-router-controller: nonprofitsEin
+    x-swagger-router-controller: getSingleNonprofitByEIN
     get:
       description: Returns a nonprofit by EIN
       # used as the method name of the controller
+      operationId: getSingleNonprofitByEIN
       parameters:
         - name: ein
           in: path
@@ -70,11 +71,263 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /nonprofits/search/{query}:
+    get:
+      description: Returns a list of nonprofits matching by name, sort_name, city or activity
+      # used as the method name of the controller
+      operationId: searchNonprofits
+      parameters:
+        - name: query
+          in: path
+          description: The keyword to use in the search procedure
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/nonprofitsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /update/clear:
+    # binds a127 app logic to a route
+    get:
+      description: Clears the DB. To be used with care. Requires authorization token to be included in the request header (Bearer ndsvn2g8dnsb9hsg).
+      # used as the method name of the controller
+      operationId: delete
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization header, defined in the .env vars
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/nonprofitsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /update/download/{part}:
+    # binds a127 app logic to a route
+    get:
+      description: Downloads a file from the IRS service. Requires authorization token to be included in the request header (Bearer ndsvn2g8dnsb9hsg).
+      # used as the method name of the controller
+      operationId: downloadPart
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization header, defined in the .env vars
+          required: true
+          type: string
+        - name: part
+          in: path
+          description: The number of the file (1-4)
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/nonprofitsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /update/parse:
+    # binds a127 app logic to a route
+    get:
+      description: Parses the downloaded data following the IRS infosheet. Requires authorization token to be included in the request header (Bearer ndsvn2g8dnsb9hsg).
+      # used as the method name of the controller
+      operationId: parseData
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization header, defined in the .env vars
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/nonprofitsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /update/index:
+    # binds a127 app logic to a route
+    get:
+      description: Creates the indexes, required just after parsing for the search engine to work. Requires authorization token to be included in the request header (Bearer ndsvn2g8dnsb9hsg).
+      # used as the method name of the controller
+      operationId: indexData
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization header, defined in the .env vars
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/nonprofitsResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /protected/nonprofits:
+    # binds a127 app logic to a route
+    get:
+      description: Returns nonprofits with all fields (just like the public method, only this one returns all the stored fields). Requires authorization token to be included in the request header (Bearer ndsvn2g8dnsb9hsg).
+      # used as the method name of the controller
+      operationId: getProtectedNonprofits
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization header, defined in the .env vars
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/nonprofitsResponseExtended"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /protected/nonprofits/{ein}:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: getSingleNonprofitByEIN
+    get:
+      description: Returns nonprofits with all fields (just like the public method, only this one returns all the stored fields). Requires authorization token to be included in the request header (Bearer ndsvn2g8dnsb9hsg).
+      # used as the method name of the controller
+      operationId: getProtectedSingleNonprofitByEIN
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization header, defined in the .env vars
+          required: true
+          type: string
+        - name: ein
+          in: path
+          description: The EIN of the nonprofit to look up
+          required: true
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/nonprofitsResponseExtended"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /protected/nonprofits/search/{query}:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: getSingleNonprofitByEIN
+    get:
+      description: Returns a list of nonprofits matching by name, sort_name, city or activity, returning all the fields (just like the public method, only this one returns all the stored fields). Requires authorization token to be included in the request header (Bearer ndsvn2g8dnsb9hsg).
+      # used as the method name of the controller
+      operationId: searchProtectedNonprofits
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization header, defined in the .env vars
+          required: true
+          type: string
+        - name: query
+          in: path
+          description: The keyword to use in the search procedure
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/nonprofitsResponseExtended"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /protected/custom:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: getProtectedNonprofitsCustom
+    get:
+      description: Returns a list of nonprofits, allowing to sort by any field and returning all the fields. Requires authorization token to be included in the request header (Bearer ndsvn2g8dnsb9hsg).
+      # used as the method name of the controller
+      operationId: getProtectedNonprofitsCustom
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization header, defined in the .env vars
+          required: true
+          type: string
+        - name: posts_per_page
+          in: query
+          description: The number of nonprofits to display per page (max 100)
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: The chosen page, depending on the number of posts_per_page
+          required: false
+          type: string
+        - name: sort_by
+          in: query
+          description: The field to sort by. Accepted input are income_amt, revenue_amt.
+          required: false
+          type: string
+        - name: order
+          in: query
+          description: Either 'ASC' or 'DESC'. Defaults to ?
+          required: false
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/nonprofitsResponseExtended"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
 definitions:
   nonprofitsResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
+  nonprofitsResponseExtended:
     required:
       - message
     properties:

@@ -111,7 +111,7 @@ describe('routes : search', function() {
 
   it('should create the search index', (done) => {
     chai.request(app)
-    .get('/v1/update/tsvectors')
+    .get('/v1/update/index')
     .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
     .end((err, res) => {
       done();

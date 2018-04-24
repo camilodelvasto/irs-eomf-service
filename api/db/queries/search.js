@@ -13,7 +13,7 @@ function createVectors() {
       for (var i = 0; i < batchCount; i++) {
         var test = await createVectorBatch(i, batchCount - 1)
         if (test) {
-          sequelize.query('CREATE INDEX nonprofits_trgm_idx ON nonprofits_vectors USING gin ("TRIGRAM" gin_trgm_ops);')
+          sequelize.query('CREATE INDEX IF NOT EXISTS nonprofits_trgm_idx ON nonprofits_vectors USING gin ("TRIGRAM" gin_trgm_ops);')
           .then(() => {
             resolve()
           })

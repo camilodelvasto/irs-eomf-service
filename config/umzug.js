@@ -1,22 +1,22 @@
-var db = require('../api/db/models')
+const db = require('../api/db/models');
 
 module.exports = {
   storage: 'sequelize',
   storageOptions: {
-      sequelize: db.sequelize,
+    sequelize: db.sequelize,
   },
 
   migrations: {
     params: [
       db.sequelize.getQueryInterface(), // queryInterface
       db.sequelize.constructor, // DataTypes
-      function() {
+      function () {
         throw new Error('Migration tried to use old style "done" callback. Please upgrade to "umzug" and return a promise instead.');
-      }
+      },
     ],
     path: './api/db/migrations',
-    pattern: /\.js$/
+    pattern: /\.js$/,
   },
 
-  logging: false
-}
+  logging: false,
+};
