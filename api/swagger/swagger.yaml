@@ -41,7 +41,7 @@ paths:
           description: Success
           schema:
             # a pointer to a definition
-            $ref: "#/definitions/nonprofitsResponse"
+            $ref: "#/definitions/nonprofits"
         # responses may fall through to errors
         default:
           description: Error
@@ -65,7 +65,7 @@ paths:
           description: Success
           schema:
             # a pointer to a definition
-            $ref: "#/definitions/nonprofitsResponse"
+            $ref: "#/definitions/nonprofits"
         # responses may fall through to errors
         default:
           description: Error
@@ -87,7 +87,7 @@ paths:
           description: Success
           schema:
             # a pointer to a definition
-            $ref: "#/definitions/nonprofitsResponse"
+            $ref: "#/definitions/nonprofits"
         # responses may fall through to errors
         default:
           description: Error
@@ -110,7 +110,7 @@ paths:
           description: Success
           schema:
             # a pointer to a definition
-            $ref: "#/definitions/nonprofitsResponse"
+            $ref: "#/definitions/DefaultResponse"
         # responses may fall through to errors
         default:
           description: Error
@@ -139,7 +139,7 @@ paths:
           description: Success
           schema:
             # a pointer to a definition
-            $ref: "#/definitions/nonprofitsResponse"
+            $ref: "#/definitions/DefaultResponse"
         # responses may fall through to errors
         default:
           description: Error
@@ -162,7 +162,7 @@ paths:
           description: Success
           schema:
             # a pointer to a definition
-            $ref: "#/definitions/nonprofitsResponse"
+            $ref: "#/definitions/DefaultResponse"
         # responses may fall through to errors
         default:
           description: Error
@@ -185,7 +185,7 @@ paths:
           description: Success
           schema:
             # a pointer to a definition
-            $ref: "#/definitions/nonprofitsResponse"
+            $ref: "#/definitions/DefaultResponse"
         # responses may fall through to errors
         default:
           description: Error
@@ -208,7 +208,7 @@ paths:
           description: Success
           schema:
             # a pointer to a definition
-            $ref: "#/definitions/nonprofitsResponseExtended"
+            $ref: "#/definitions/nonprofitsExtended"
         # responses may fall through to errors
         default:
           description: Error
@@ -238,7 +238,7 @@ paths:
           description: Success
           schema:
             # a pointer to a definition
-            $ref: "#/definitions/nonprofitsResponseExtended"
+            $ref: "#/definitions/nonprofitsExtended"
         # responses may fall through to errors
         default:
           description: Error
@@ -267,7 +267,7 @@ paths:
           description: Success
           schema:
             # a pointer to a definition
-            $ref: "#/definitions/nonprofitsResponseExtended"
+            $ref: "#/definitions/nonprofitsExtended"
         # responses may fall through to errors
         default:
           description: Error
@@ -303,7 +303,7 @@ paths:
           type: string
         - name: order
           in: query
-          description: Either 'ASC' or 'DESC'. Defaults to ?
+          description: Either 'ASC' or 'DESC'. Defaults to DESC.
           required: false
           type: string
       responses:
@@ -311,7 +311,54 @@ paths:
           description: Success
           schema:
             # a pointer to a definition
-            $ref: "#/definitions/nonprofitsResponseExtended"
+            $ref: "#/definitions/nonprofitsExtended"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /protected/revoked/count:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: getProtectedRevokedCount
+    get:
+      description: Returns the count of revoked nonprofits. Requires authorization token to be included in the request header (Bearer ndsvn2g8dnsb9hsg).
+      # used as the method name of the controller
+      operationId: getProtectedRevokedCount
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization header, defined in the .env vars
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/DefaultResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /protected/revoked/list:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: getProtectedRevokedList
+    get:
+      description: Returns the list with all the revoked nonprofits (only EIN and Name are returned). Requires authorization token to be included in the request header (Bearer ndsvn2g8dnsb9hsg).
+      # used as the method name of the controller
+      operationId: getProtectedRevokedList
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization header, defined in the .env vars
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/revoked"
         # responses may fall through to errors
         default:
           description: Error
@@ -321,18 +368,108 @@ paths:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
 definitions:
-  nonprofitsResponse:
-    required:
-      - message
+  nonprofits:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        EIN:
+          type: integer
+          format: int64
+        NAME:
+          type: string
+        STREET:
+          type: string
+        CITY:
+          type: string
+        STATE:
+          type: string
+        ZIP:
+          type: string
+        ACTIVITY:
+          type: string
+        NTEE_CD:
+          type: string
+        SORT_NAME:
+          type: string
+        validated:
+          type: boolean
+  nonprofitsExtended:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        EIN:
+          type: integer
+          format: int64
+        NAME:
+          type: string
+        STREET:
+          type: string
+        CITY:
+          type: string
+        STATE:
+          type: string
+        ZIP:
+          type: string
+        ACTIVITY:
+          type: string
+        NTEE_CD:
+          type: string
+        SORT_NAME:
+          type: string
+        validated:
+          type: boolean
+        GROUP:
+          type: string
+        AFFILIATION:
+          type: string
+        CLASSIFICATION:
+          type: string
+        RULING:
+          type: string
+        DEDUCTIBILITY:
+          type: integer
+          format: int64
+        ASSET_AMT:
+          type: integer
+          format: int64
+        INCOME_AMT:
+          type: integer
+          format: int64
+        REVENUE_AMT:
+          type: integer
+          format: int64
+  revoked:
+    type: array
+    items:
+      type: object
+      properties:
+        EIN:
+          type: integer
+          format: int64
+        validatedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+  DefaultResponse:
+    type: object
     properties:
+      status:
+        type: string
       message:
         type: string
-  nonprofitsResponseExtended:
-    required:
-      - message
-    properties:
-      message:
-        type: string
+      count:
+        type: integer
+        format: int64
   ErrorResponse:
     required:
       - message

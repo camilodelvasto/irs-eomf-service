@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     REVENUE_AMT: DataTypes.BIGINT,
     NTEE_CD: DataTypes.STRING,
     SORT_NAME: DataTypes.STRING,
+    validated: DataTypes.BOOLEAN
   }, {});
   return nonprofits;
 };
