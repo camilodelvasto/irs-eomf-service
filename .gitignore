@@ -3,6 +3,8 @@ package-lock.json
 
 # Environment variables
 .env
+.env.example
+.env.test
 
 # Logs
 logs

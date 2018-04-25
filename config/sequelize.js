@@ -11,5 +11,5 @@ module.exports = {
     idle: 200000,
     acquire: 200000,
   },
-  logging: vars.env === 'development' ? false : '',
+  logging: vars.LOGGING ? '' : true,
 };
