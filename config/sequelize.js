@@ -1,7 +1,7 @@
 const vars = require('./vars.js');
 
 module.exports = {
-  url: process.env.DB_CONNECTION_URL,
+  url: process.env.DATABASE_URL,
   dialect: process.env.DB_DIALECT,
   operatorsAliases: 'Op',
   connectionTimeout: 0,
