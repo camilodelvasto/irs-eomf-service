@@ -241,5 +241,60 @@ describe('routes : update', function() {
     });
   });
 
+  it('should count 0 revoked nonprofits, before the new bulletin comes', (done) => {
+    chai.request(app)
+    .get('/v1/update/download/prepare')
+    .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
+    .end((err, res) => {
+      should.not.exist(err);
+      res.status.should.equal(200);
+      res.type.should.equal('application/json');
+      done();
+    });
+  });
+
+  it('should download a newer file', (done) => {
+    chai.request(app)
+    .get('/v1/update/download/4')
+    .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
+    .end((err, res) => {
+      should.not.exist(err);
+      res.status.should.equal(200);
+      res.type.should.equal('application/json');
+      res.body.status.should.eql('success');
+      res.body.message.should.eql('Import performed successfully');
+      done();
+    });
+  });
+
+  it('should parse the newer large file and return 2511 total records', (done) => {
+    chai.request(app)
+    .get('/v1/update/parse')
+    .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
+    .end((err, res) => {
+      should.not.exist(err);
+      res.status.should.equal(200);
+      res.type.should.equal('application/json');
+      res.body.status.should.eql('success');
+      res.body.message.should.eql('Update performed successfully');
+      res.body.count.should.eql(2511);
+      done();
+    });
+  });
+
+  it('should count 66 revoked nonprofits', (done) => {
+    chai.request(app)
+    .get('/v1/protected/revoked/count')
+    .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
+    .end((err, res) => {
+      should.not.exist(err);
+      res.status.should.equal(200);
+      res.type.should.equal('application/json');
+      res.body.count.should.equal(66);
+      done();
+    });
+  });
+
+
 });
 

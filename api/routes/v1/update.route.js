@@ -20,6 +20,7 @@ function haltOnTimedout(req, res, next){
   if (!req.timedout) next();
 }
 
+// This methods clears both databases. To be used only in development.
 router.get('/clear',
   auth.requireToken,
   async function(req, res, next) {
@@ -46,6 +47,21 @@ router.get('/clear',
     }
   }
 );
+
+// This method marks all nonprofits as revoked. To be called before the update process begins.
+router.get('/download/prepare',
+  auth.requireToken,
+  async function(req, res, next) {
+    try {
+      const response = await queries.markRevoked();
+      res.status(200)
+      res.json(response)
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 
 router.get('/download/:part',
   auth.requireToken,

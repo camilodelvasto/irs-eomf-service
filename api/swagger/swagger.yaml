@@ -3,7 +3,7 @@ info:
   version: "0.0.1"
   title: IRS/EOMF SearchApi
 # during dev, should point to your local machine
-host: localhost:1331
+host: localhost:1337
 # basePath prefixes all resource paths 
 basePath: /v1
 # 
@@ -93,10 +93,10 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /update/clear:
+  /update/download/prepare:
     # binds a127 app logic to a route
     get:
-      description: Clears the DB. To be used with care. Requires authorization token to be included in the request header (Bearer ndsvn2g8dnsb9hsg).
+      description: Marks all the nonprofits as non-valid. To be called before the update (download, parse, index) process starts. Requires authorization token to be included in the request header (Bearer ndsvn2g8dnsb9hsg).
       # used as the method name of the controller
       operationId: delete
       parameters:

@@ -183,6 +183,18 @@ async function getRevokedList() {
   })
 }
 
+function markRevoked() {
+  return new Promise(resolve => {
+    db.sequelize.query('UPDATE nonprofits SET validated = false;')
+      .then(count => {
+        resolve(true)
+      })
+      .catch ((err) => {
+        console.log(err)
+      })
+  });
+}
+
 function deleteRevoked() {
   return new Promise(resolve => {
     db['nonprofits'].destroy({
@@ -249,6 +261,7 @@ module.exports = {
   getNonprofitsCustom,
   getRevokedCount,
   getRevokedList,
+  markRevoked,
   clearDB
 };
 
