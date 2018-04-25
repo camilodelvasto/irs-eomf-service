@@ -136,7 +136,7 @@ describe('routes : search', function() {
     .end((err, res) => {
       should.not.exist(err);
       res.status.should.equal(200);
-      res.body[0]['EIN'].should.equal(237282008);
+      JSON.stringify(res.body).should.include(237282008);
       done();
     });
   });
@@ -148,7 +148,7 @@ describe('routes : search', function() {
       should.not.exist(err);
       res.status.should.equal(200);
       res.type.should.equal('application/json');
-      res.body[0]['EIN'].should.equal(237334441);
+      JSON.stringify(res.body).should.include(237334441);
       done();
     });
   });
