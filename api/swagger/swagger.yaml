@@ -98,7 +98,7 @@ paths:
     get:
       description: Marks all the nonprofits as non-valid. To be called before the update (download, parse, index) process starts. Requires authorization token to be included in the request header (Bearer ndsvn2g8dnsb9hsg).
       # used as the method name of the controller
-      operationId: delete
+      operationId: prepare
       parameters:
         - name: Authorization
           in: header

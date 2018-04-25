@@ -1,44 +1,30 @@
-# Express ES2017 REST API Boilerplate
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![npm version](https://badge.fury.io/js/express-rest-es2017-boilerplate.svg)](https://badge.fury.io/js/express-rest-es2017-boilerplate) [![Build Status](https://travis-ci.org/danielfsousa/express-rest-es2017-boilerplate.svg?branch=master)](https://travis-ci.org/danielfsousa/express-rest-es2017-boilerplate) [![Coverage Status](https://coveralls.io/repos/github/danielfsousa/express-rest-es2017-boilerplate/badge.svg?branch=master)](https://coveralls.io/github/danielfsousa/express-rest-es2017-boilerplate?branch=master) [![bitHound Overall Score](https://www.bithound.io/github/danielfsousa/express-rest-es2017-boilerplate/badges/score.svg)](https://www.bithound.io/github/danielfsousa/express-rest-es2017-boilerplate) [![Greenkeeper badge](https://badges.greenkeeper.io/danielfsousa/express-rest-es2017-boilerplate.svg)](https://greenkeeper.io/)
+# IRS Exempt Organization Master File Search API
+Express + PostgreSQL search API that downloads the EOMF (Exempt Organizations Master File) from the IRS website and parses/exposes the data on a /nonprofits endpoint.
 
-Boilerplate/Generator/Starter Project for building RESTful APIs and microservices using Node.js, Express and MongoDB
 
 ## Features
-
- - No transpilers, just vanilla javascript
- - ES2017 latest features like Async/Await
+ - Built using Express + Sequelize as the ORM
+ - Documentation via Swagger
  - CORS enabled
- - Uses [yarn](https://yarnpkg.com)
- - Express + MongoDB ([Mongoose](http://mongoosejs.com/))
- - Consistent coding styles with [editorconfig](http://editorconfig.org)
- - [Docker](https://www.docker.com/) support
  - Uses [helmet](https://github.com/helmetjs/helmet) to set some HTTP headers for security
  - Load environment variables from .env files with [dotenv](https://github.com/rolodato/dotenv-safe)
- - Request validation with [joi](https://github.com/hapijs/joi)
- - Gzip compression with [compression](https://github.com/expressjs/compression)
  - Linting with [eslint](http://eslint.org)
  - Tests with [mocha](https://mochajs.org), [chai](http://chaijs.com) and [sinon](http://sinonjs.org)
- - Code coverage with [istanbul](https://istanbul.js.org) and [coveralls](https://coveralls.io)
- - Git hooks with [husky](https://github.com/typicode/husky) 
- - Logging with [morgan](https://github.com/expressjs/morgan)
- - Authentication and Authorization with [passport](http://passportjs.org)
- - API documentation geratorion with [apidoc](http://apidocjs.com)
- - Continuous integration support with [travisCI](https://travis-ci.org)
- - Monitoring with [pm2](https://github.com/Unitech/pm2)
+ - Authorization of protected endpoints with [passport](http://passportjs.org)
 
 ## Requirements
 
- - [Node v7.6+](https://nodejs.org/en/download/current/) or [Docker](https://www.docker.com/)
+ - [Node v7.6+](https://nodejs.org/en/download/current/)
  - [Yarn](https://yarnpkg.com/en/docs/install)
+ - PostgreSQL installed locally
 
 ## Getting Started
 
-Clone the repo and make it yours:
+Clone the repo:
 
 ```bash
-git clone --depth 1 https://github.com/danielfsousa/express-rest-es2017-boilerplate
-cd express-rest-es2017-boilerplate
-rm -rf .git
+git clone --depth 1 https://github.com/camilodelvasto/irs-eomf-service.git
+cd irs-eomf-service
 ```
 
 Install dependencies:
@@ -53,10 +39,50 @@ Set environment variables:
 cp .env.example .env
 ```
 
+Create two databases using Postgres and add the connection string to the .env var `DATABASE_URL`
+
+```bash
+NODE_ENV=development
+PORT=1337
+API_KEY=ndsvn2g8dnsb9hsg
+irsEOMFUrl='https://www.irs.gov/pub/irs-soi/eo'
+DATABASE_URL='postgres://koa:password@127.0.0.1:5432/exp'
+DB_DIALECT=postgres
+demoDataPort=1349
+operatorsAliases=Op
+connectionTimeout=0
+```
+
+Run the migrations to prepare the dev database:
+
+```bash
+node_modules/.bin/sequelize db:migrate
+```
+
 ## Running Locally
 
 ```bash
 yarn dev
+```
+
+## Running through swagger
+
+```bash
+swagger project start
+```
+
+## Opening Swagger API specification editor
+
+Run in another tab if you are going to change the API specification or are going to update the documentation. Do it while running swagger (see above) in another terminal tab.
+
+```bash
+swagger project edit
+```
+
+Note: after completing the documentation changes in the main project (this one), clone and update the documentation in /api/swagger/swagger.yaml to ./swagger.yaml in git@github.com:camilodelvasto/irs-eomf-service-swagger.git and publish using surge:
+
+```bash
+npm run surge
 ```
 
 ## Running in Production
@@ -97,25 +123,11 @@ yarn test:watch
 yarn coverage
 ```
 
-## Validate
-
-```bash
-# run lint and tests
-yarn validate
-```
-
 ## Logs
 
 ```bash
 # show logs in production
 pm2 logs
-```
-
-## Documentation
-
-```bash
-# generate and open api documentation
-yarn docs
 ```
 
 ## Docker
@@ -138,6 +150,22 @@ docker-compose -f docker-compose.yml -f docker-compose.test.yml up
 ```
 
 ## Deploy
+To deploy on Heroku, do the following:
+
+1. Create a new app and add a Postgres add-on:
+2. Add the required .env variables in the Heroku dashboard
+3. Run the remote migrations
+
+```bash
+heroku run sequelize migrate:db
+```
+
+
+Check the logs:
+
+```bash
+heroku logs --tail
+```
 
 Set your server ip:
 
@@ -163,7 +191,6 @@ sh ./deploy.sh
 
  - [KunalKapadia/express-mongoose-es6-rest-api](https://github.com/KunalKapadia/express-mongoose-es6-rest-api)
  - [diegohaz/rest](https://github.com/diegohaz/rest)
+ - [danielfsousa/express-rest-es2017-boilerplate](https://github.com/danielfsousa/express-rest-es2017-boilerplate)
 
 ## License
-
-[MIT License](README.md) - [Daniel Sousa](https://github.com/danielfsousa)
