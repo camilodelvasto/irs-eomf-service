@@ -6,10 +6,8 @@ const search = require('../../db/queries/search');
 var auth = require('../../middlewares/auth');
 
 // TODO
-// prevent the nonprofits to be validated if only one day has passed since the previous update (using updatedAt)
 // - use socket IO to update client while performing the updates: wishlist
 // prevent the process to start over again if the request is repeated (also, do not download the files, or revert the migration if not completed)
-// - repeat for all the 4 files: to be done at the master system
 
 const timeout = require('connect-timeout');
 
