@@ -424,8 +424,6 @@ definitions:
           type: string
         SORT_NAME:
           type: string
-        validated:
-          type: boolean
         GROUP:
           type: string
         AFFILIATION:
@@ -446,6 +444,14 @@ definitions:
         REVENUE_AMT:
           type: integer
           format: int64
+        validated:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
   revoked:
     type: array
     items:
@@ -454,7 +460,7 @@ definitions:
         EIN:
           type: integer
           format: int64
-        validatedAt:
+        createdAt:
           type: string
           format: date-time
         updatedAt:

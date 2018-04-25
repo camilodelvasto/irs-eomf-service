@@ -39,7 +39,7 @@ Set environment variables:
 cp .env.example .env
 ```
 
-Create two databases using Postgres and add the connection string to the .env var `DATABASE_URL`
+Create two databases using Postgres and add the connection string to the .env var `DATABASE_URL` along with all the other env variables:
 
 ```bash
 NODE_ENV=development
