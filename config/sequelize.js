@@ -1,8 +1,8 @@
 const vars = require('./vars.js');
 
 module.exports = {
-  url: process.env.DATABASE_URL,
-  dialect: process.env.DB_DIALECT,
+  url: vars.DATABASE_URL,
+  dialect: vars.DB_DIALECT,
   operatorsAliases: 'Op',
   connectionTimeout: 0,
   pool: {
@@ -11,5 +11,5 @@ module.exports = {
     idle: 200000,
     acquire: 200000,
   },
-  logging: vars.LOGGING ? '' : true,
+  logging: vars.LOGGING ? '' : false,
 };
