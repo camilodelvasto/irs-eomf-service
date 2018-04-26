@@ -4,6 +4,7 @@ const queries = require('../../db/queries/nonprofits');
 const updateHelpers = require('../../db/queries/update');
 const search = require('../../db/queries/search');
 var auth = require('../../middlewares/auth');
+var request = require('request');
 
 // TODO
 // - use socket IO to update client while performing the updates: wishlist
@@ -132,6 +133,32 @@ router.get('/index',
           message: 'Indexing was not completed'
         })
       }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+);
+
+router.get('/auto',
+  auth.requireToken,
+  async function(req, res, next) {
+    try {
+      let updateUrl = req.protocol + '://' + req.get('host') + req.baseUrl
+      request({url: `${updateUrl}/prepare`, headers: req.headers}, function (data) {
+        request({url: `${updateUrl}/download/1`, headers: req.headers}, function (data) {
+          request({url: `${updateUrl}/download/2`, headers: req.headers}, function (data) {
+            request({url: `${updateUrl}/download/3`, headers: req.headers}, function (data) {
+              request({url: `${updateUrl}/download/4`, headers: req.headers}, function (data) {
+                request({url: `${updateUrl}/parse`, headers: req.headers}, function (data) {
+                  request({url: `${updateUrl}/index`, headers: req.headers}, function (data) {
+                    console.log('done')
+                  })
+                })
+              })
+            })
+          })
+        })
+      })
     } catch (err) {
       console.log(err);
     }
