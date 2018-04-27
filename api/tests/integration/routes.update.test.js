@@ -157,7 +157,7 @@ describe('routes : update', function() {
     });
   });
 
-  it('should count 2400 revoked nonprofits', (done) => {
+  it('should count 0 revoked nonprofits', (done) => {
     chai.request(app)
     .get('/v1/protected/revoked/count')
     .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
@@ -165,7 +165,18 @@ describe('routes : update', function() {
       should.not.exist(err);
       res.status.should.equal(200);
       res.type.should.equal('application/json');
-      res.body.count.should.eql(2400);
+      res.body.count.should.eql(0);
+      done();
+    });
+  });
+
+  it('should mark all nonprofits as non-validated', (done) => {
+    chai.request(app)
+    .get('/v1/update/download/prepare')
+    .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
+    .end((err, res) => {
+      should.not.exist(err);
+      res.status.should.equal(200);
       done();
     });
   });
@@ -201,7 +212,7 @@ describe('routes : update', function() {
     });
   });
 
-  it('should count 168 revoked nonprofits', (done) => {
+  it('should count 66 revoked nonprofits', (done) => {
     chai.request(app)
     .get('/v1/protected/revoked/count')
     .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
@@ -209,7 +220,7 @@ describe('routes : update', function() {
       should.not.exist(err);
       res.status.should.equal(200);
       res.type.should.equal('application/json');
-      res.body.count.should.equal(168);
+      res.body.count.should.equal(66);
       done();
     });
   });
@@ -227,7 +238,7 @@ describe('routes : update', function() {
     });
   });
 
-  it('should return 168 revoked nonprofits with EIN and last updated date', (done) => {
+  it('should return 66 revoked nonprofits with EIN and last updated date', (done) => {
     chai.request(app)
     .get('/v1/protected/revoked/list')
     .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
@@ -235,7 +246,7 @@ describe('routes : update', function() {
       should.not.exist(err);
       res.status.should.equal(200);
       res.type.should.equal('application/json');
-      res.body.length.should.equal(168);
+      res.body.length.should.equal(66);
       res.body[0].should.include.keys('EIN', 'updatedAt');
       done();
     });

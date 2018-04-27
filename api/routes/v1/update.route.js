@@ -12,7 +12,7 @@ var request = require('request');
 
 const timeout = require('connect-timeout');
 
-router.use(timeout(6000000));
+router.use(timeout(600000000));
 router.use(haltOnTimedout);
 
 function haltOnTimedout(req, res, next){
@@ -53,8 +53,18 @@ router.get('/download/prepare',
   async function(req, res, next) {
     try {
       const response = await queries.markRevoked();
-      res.status(200)
-      res.json(response)
+      if (response) {
+        res.status(200)
+        res.json({
+          status: 'success',
+          message: 'All nonprofits marked as non-validated. Ready to download files.',
+        })
+      } else {
+        res.json({
+          status: 'error',
+          message: 'Prepare was not completed/bad request'
+        })
+      }
     } catch (err) {
       next(err);
     }
@@ -150,8 +160,20 @@ router.get('/auto',
             request({url: `${updateUrl}/download/3`, headers: req.headers}, function (data) {
               request({url: `${updateUrl}/download/4`, headers: req.headers}, function (data) {
                 request({url: `${updateUrl}/parse`, headers: req.headers}, function (data) {
-                  request({url: `${updateUrl}/index`, headers: req.headers}, function (data) {
-                    console.log('done')
+                  request({url: `${updateUrl}/index`, headers: req.headers}, async function (data) {
+                    const count = await queries.getCount('nonprofits', a4);
+                    if (count) {
+                      res.json({
+                        status: 'success',
+                        message: 'Update performed successfully',
+                        count: parseInt(count, 10),        
+                      })                      
+                    } else {
+                      res.json({
+                        status: 'error',
+                        message: 'Update was not completed',
+                      })                      
+                    }
                   })
                 })
               })
