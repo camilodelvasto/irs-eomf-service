@@ -161,7 +161,7 @@ router.get('/auto',
               request({url: `${updateUrl}/download/4`, headers: req.headers}, function (data) {
                 request({url: `${updateUrl}/parse`, headers: req.headers}, function (data) {
                   request({url: `${updateUrl}/index`, headers: req.headers}, async function (data) {
-                    const count = await queries.getCount('nonprofits', a4);
+                    const count = await queries.getCount('nonprofits');
                     if (count) {
                       res.json({
                         status: 'success',

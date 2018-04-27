@@ -13,7 +13,7 @@ var Sequelize = db.Sequelize
 function compareBatch(index, batchCount) {
   return new Promise(async resolve => {
     try {
-      var batchSize = 1000
+      var batchSize = 999
       var batch = await newNonprofits.findAll({ limit: batchSize, offset: batchSize * index, raw: true })
 
       // Remove all nonprofits with a non 1 deductibility code.
@@ -107,7 +107,7 @@ function fetchCSVFile(req, a1) {
             INCOME_AMT: parseInt(data.INCOME_AMT, 10) || 0,
             REVENUE_AMT: parseInt(data.REVENUE_AMT.slice(0, -3)) || 0,
             NTEE_CD: String(data.NTEE_CD) || "",
-            SORT_NAME: String(data.SORT_NAME) || "",
+            SORT_NAME: data.SORT_NAME.toString() || "",
           });
         }
         i++;
@@ -161,7 +161,7 @@ function updateDB() {
   return new Promise(async resolve => {
     try {
       var count = await queries.getCount('new_nonprofits')
-      var batchSize = 1000
+      var batchSize = 999
       var batchCount = Math.ceil(count / batchSize)
       for (var i = 0; i < batchCount; i++) {
         var test = await compareBatch(i, batchCount - 1)

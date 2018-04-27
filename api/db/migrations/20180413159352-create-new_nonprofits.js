@@ -91,7 +91,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       SORT_NAME: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       validated: {
         type: Sequelize.BOOLEAN,

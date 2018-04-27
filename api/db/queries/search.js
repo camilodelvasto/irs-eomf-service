@@ -8,7 +8,7 @@ function createVectors() {
   return new Promise(async resolve => {
     try {
       var count = await queries.getCount('nonprofits')
-      var batchSize = 1000
+      var batchSize = 5005
       var batchCount = Math.ceil(count / batchSize)
       for (var i = 0; i < batchCount; i++) {
         var test = await createVectorBatch(i, batchCount - 1)
@@ -31,7 +31,7 @@ function createVectors() {
 function createVectorBatch(index, batchCount) {
   return new Promise(async resolve => {
     try {
-      var batchSize = 1000
+      var batchSize = 5005
       var batch = await db.nonprofits.findAll({ limit: batchSize, offset: batchSize * index, raw: true })
 
       sequelize.query(batchVectorQuery('nonprofits_vectors', batch, 'EIN'))
