@@ -211,11 +211,13 @@ function deleteRevoked() {
   });
 }
 
-function clearDB(tableName) {
+function clearTable(tableName) {
   return new Promise(resolve => {
+    console.log('here')
     // prepare the table for the import
     db.sequelize.getQueryInterface().bulkDelete(tableName, null, {})
       .then(() => {
+        console.log('and here')
         resolve(1000);
       })
       .catch((err) => {
@@ -262,7 +264,7 @@ module.exports = {
   getRevokedCount,
   getRevokedList,
   markRevoked,
-  clearDB
+  clearTable
 };
 
 // Helper functions to standardize queries before and after

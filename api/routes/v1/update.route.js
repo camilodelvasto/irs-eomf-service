@@ -16,9 +16,9 @@ router.get('/clear',
   auth.requireToken,
   async function(req, res, next) {
     try {
-      const a2 = await queries.clearDB('nonprofits');
-      const a3 = await queries.clearDB('new_nonprofits', a2);
-      const a4 = await queries.clearDB('nonprofits_vectors', a3);
+      const a2 = await queries.clearTable('nonprofits');
+      const a3 = await queries.clearTable('new_nonprofits', a2);
+      const a4 = await queries.clearTable('nonprofits_vectors', a3);
       const count = await queries.getCount('nonprofits', a4);
       if (count === 0) {
         res.status(200)
@@ -96,7 +96,7 @@ router.get('/parse',
       const a4 = await updateHelpers.updateDB();
       const count = await queries.getCount('nonprofits', a4);
       if (count) {
-        const a3 = await queries.clearDB('new_nonprofits');
+        const a3 = await queries.clearTable('new_nonprofits');
         res.status(200)
         res.json({
           status: 'success',
@@ -119,7 +119,7 @@ router.get('/index',
   auth.requireToken,
   async function(req, res, next) {
     try {
-      const a3 = await queries.clearDB('nonprofits_vectors');
+      const a3 = await queries.clearTable('nonprofits_vectors');
       const a4 = await search.createVectors();
       const count = await queries.getCount('nonprofits_vectors', a4);
       if (count) {
@@ -210,8 +210,8 @@ router.get('/auto',
               break;
               case 'parse':
                 console.log('parse is finished')
-                const a1 = await queries.clearDB('new_nonprofits');
-                const a3 = await queries.clearDB('nonprofits_vectors', a1);
+                const a1 = await queries.clearTable('new_nonprofits');
+                const a3 = await queries.clearTable('nonprofits_vectors', a1);
                 updateManager.setStatus('index', 'started')
                 search.createVectors(a3);
               break;
@@ -242,8 +242,5 @@ router.get('/auto',
     }
   }
 );
-
-
-router
 
 module.exports = router;

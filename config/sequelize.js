@@ -6,7 +6,7 @@ module.exports = {
   operatorsAliases: 'Op',
   connectionTimeout: 0,
   pool: {
-    max: 20,
+    max: 19,
     min: 1,
     idle: 200000,
     acquire: 200000,
