@@ -1,5 +1,6 @@
 const queries = require('./nonprofits');
 var db = require('../models')
+const updateManager = require('./status');
 var Sequelize = db.Sequelize
 var sequelize = db.sequelize
 const Op = Sequelize.Op;
@@ -15,6 +16,7 @@ function createVectors() {
         if (test) {
           sequelize.query('CREATE INDEX IF NOT EXISTS nonprofits_trgm_idx ON nonprofits_vectors USING gin ("TRIGRAM" gin_trgm_ops);')
           .then(() => {
+            updateManager.setStatus('index', 'finished')
             resolve()
           })
           .catch(err => {

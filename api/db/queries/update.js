@@ -5,6 +5,7 @@ const csv = require('csv-stream');
 const CSV_URL = process.env.irsEOMFUrl;
 
 var db = require('../../db/models')
+const updateManager = require('./status');
 var newNonprofits = db.new_nonprofits
 
 var sequelize = db.sequelize
@@ -130,7 +131,8 @@ function fetchCSVFile(req, a1) {
                 arr = [];
                 setTimeout(function() {
                   return db['new_nonprofits'].count()
-                    .then(count => {
+                    .then(async count => {
+                      await updateManager.setStatus(`download${req.params.part}`, 'finished', req)
                       resolve(count)
                     })
                     .catch ((err) => {
@@ -157,7 +159,7 @@ function fetchCSVFile(req, a1) {
   });
 }
 
-function updateDB() {
+function updateDB(req) {
   return new Promise(async resolve => {
     try {
       var count = await queries.getCount('new_nonprofits')
@@ -166,6 +168,7 @@ function updateDB() {
       for (var i = 0; i < batchCount; i++) {
         var test = await compareBatch(i, batchCount - 1)
         if (test) {
+          updateManager.setStatus('parse', 'finished', req)
           resolve()
         }
       }
