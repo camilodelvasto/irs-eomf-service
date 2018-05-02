@@ -149,7 +149,8 @@ router.get('/auto',
       const last = await updateManager.getStatus()
       if (last.status === null || (last.status === 'finished' && last.phase === 'update') || last.status === 'err') {
         const a1 = await queries.markRevoked()
-        const a3 = await updateManager.setStatus('download1', 'started', a1)
+        const a2 = await queries.clearTable('new_nonprofits', a1);
+        const a3 = await updateManager.setStatus('download1', 'started', a2)
         updateHelpers.fetchCSVFile({ params: { part: 1 } });
 
         // inform client
@@ -158,7 +159,7 @@ router.get('/auto',
           status: await updateManager.getStatus(a3)
         })
       } else {
-        // a process is running: test if it's completed or staled
+        // a process is running: test if it's completed or stale (more than x minutes after init)
         switch (last.status) {
           case 'started':
             res.json({
@@ -167,7 +168,6 @@ router.get('/auto',
               status: last.status
             })
 
-            // add condition to restart the current process if it the status has been idle for more than x minutes.
             // prevent process to start again if last update was < x minutes ago.
           break;
           // Previous process finished, go to the next one.
@@ -194,8 +194,7 @@ router.get('/auto',
                 updateHelpers.updateDB()
               break;
               case 'parse':
-                const a1 = await queries.clearTable('new_nonprofits');
-                const a3 = await queries.clearTable('nonprofits_vectors', a1);
+                const a3 = await queries.clearTable('nonprofits_vectors');
                 updateManager.setStatus('index', 'started')
                 search.createVectors(a3);
               break;
@@ -226,7 +225,7 @@ router.get('/auto',
   }
 );
 
-// This method locks the previous update so that a new one can be started.
+// This method unlocks the update process so that a new one can be started.
 router.get('/auto/unlock',
   auth.requireToken,
   async function(req, res, next) {
