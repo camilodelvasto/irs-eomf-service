@@ -306,6 +306,41 @@ describe('routes : update', function() {
     });
   });
 
+  it('should clear the DB and return 0 records', (done) => {
+    chai.request(app)
+    .get('/v1/update/clear')
+    .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
+    .end((err, res) => {
+      done();
+    });
+  });
 
+  it('should perform the update automatically and keep polling until completion', (done) => {
+    var response = {}
+    chai.request(app)
+    .get('/v1/update/auto')
+    .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
+    .end((err, res) => {
+      response = res;
+      setInterval(async () => {
+        if (response.body.message && response.body.message === "The update has been completed.") {
+          response.body.message.should.equal("The update has been completed.");
+          done();
+        } else {
+          response = await repeatRequest()
+        }
+      }, 300)
+    })
+  });
 });
 
+function repeatRequest() {
+  return new Promise(resolve => {
+    chai.request(app)
+    .get('/v1/update/auto')
+    .set('Authorization', 'Bearer ndsvn2g8dnsb9hsg')
+    .end((err, res) => {
+      resolve(res);
+    })
+  })
+}

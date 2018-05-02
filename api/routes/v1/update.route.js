@@ -11,7 +11,7 @@ var request = require('request');
 // - use socket IO to update client while performing the updates: wishlist
 // prevent the process to start over again if the request is repeated (also, do not download the files, or revert the migration if not completed)
 
-// This methods clears both databases. To be used only in development.
+// This methods clears both databases. To be used only in development/testing.
 router.get('/clear',
   auth.requireToken,
   async function(req, res, next) {
@@ -19,7 +19,8 @@ router.get('/clear',
       const a2 = await queries.clearTable('nonprofits');
       const a3 = await queries.clearTable('new_nonprofits', a2);
       const a4 = await queries.clearTable('nonprofits_vectors', a3);
-      const count = await queries.getCount('nonprofits', a4);
+      const a5 = await queries.clearTable('updates', a4);
+      const count = await queries.getCount('nonprofits', a5);
       if (count === 0) {
         res.status(200)
         res.json({
@@ -145,31 +146,21 @@ router.get('/auto',
   auth.requireToken,
   async function(req, res, next) {
     try {
-      // let updateUrl = req.protocol + '://' + req.get('host') + req.baseUrl
-      // check current status to determine if any action is necessary
-      // switch actions and decide what to do: to update client (if status is in progress) or to trigger next action
       const last = await updateManager.getStatus()
       if (last.status === null || (last.status === 'finished' && last.phase === 'update') || last.status === 'err') {
-        // There's no history about the process, so start from scratch, or the last update was completed, or it wasn't successful.
-        // start process (call function)
-        // set status and next function
-        console.log('starting a new update process')
-        // first action: prepare DB
         const a1 = await queries.markRevoked()
         const a3 = await updateManager.setStatus('download1', 'started', a1)
         updateHelpers.fetchCSVFile({ params: { part: 1 } });
 
         // inform client
         res.json({
-          message: 'Preparing DB',
+          message: 'Update process started',
           status: await updateManager.getStatus(a3)
         })
       } else {
         // a process is running: test if it's completed or staled
-        console.log('an update is running, check status')
         switch (last.status) {
           case 'started':
-            console.log('started')
             res.json({
               message: 'A process is running, get back later',
               phase: last.phase,
@@ -179,44 +170,36 @@ router.get('/auto',
             // add condition to restart the current process if it the status has been idle for more than x minutes.
             // prevent process to start again if last update was < x minutes ago.
           break;
-          // previous process finished, go to the next one.
+          // Previous process finished, go to the next one.
           case 'finished':
-            console.log('fnished')
             switch (last.phase) {
               case 'init':
-                console.log('init is finished')
                 updateManager.setStatus('download1', 'started')
                 updateHelpers.fetchCSVFile({ params: { part: 1 } });
               break;
               case 'download1':
-                console.log('download1 is finished')
                 updateManager.setStatus('download2', 'started')
                 updateHelpers.fetchCSVFile({ params: { part: 2 } });
               break;
               case 'download2':
-                console.log('download2 is finished')
                 updateManager.setStatus('download3', 'started')
                 updateHelpers.fetchCSVFile({ params: { part: 3 } });
               break;
               case 'download3':
-                console.log('download3 is finished')
                 updateManager.setStatus('download4', 'started')
                 updateHelpers.fetchCSVFile({ params: { part: 4 } });
               break;
               case 'download4':
-                console.log('download4 is finished')
                 updateManager.setStatus('parse', 'started')
                 updateHelpers.updateDB()
               break;
               case 'parse':
-                console.log('parse is finished')
                 const a1 = await queries.clearTable('new_nonprofits');
                 const a3 = await queries.clearTable('nonprofits_vectors', a1);
                 updateManager.setStatus('index', 'started')
                 search.createVectors(a3);
               break;
               case 'index':
-                console.log('the update was completed')
                 updateManager.setStatus('update', 'finished')
                 res.json({
                   message: 'The update has been completed.'
@@ -242,5 +225,23 @@ router.get('/auto',
     }
   }
 );
+
+// This method locks the previous update so that a new one can be started.
+router.get('/auto/unlock',
+  auth.requireToken,
+  async function(req, res, next) {
+    try {
+      updateManager.setStatus(null, 'err');
+      res.status(200)
+      res.json({
+        status: 'success',
+        message: 'Update has been unlocked.'
+      })
+    } catch (err) {
+      console.log(err);
+    }
+  }
+);
+
 
 module.exports = router;

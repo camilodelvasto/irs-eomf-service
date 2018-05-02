@@ -59,6 +59,19 @@ router.get('/custom',
   }
 );
 
+router.get('/summary',
+  auth.requireToken,
+  async function(req, res, next) {
+    try {
+      const response = await queries.getSummary();
+      res.status(200)
+      res.json(response)
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 router.get('/revoked',
   auth.requireToken,
   async function(req, res, next) {

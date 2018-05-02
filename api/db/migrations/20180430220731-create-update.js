@@ -16,9 +16,6 @@ module.exports = {
         type: Sequelize.STRING,
         defaultValue: 'idle'
       },
-      lastUpdated: {
-        type: Sequelize.DATE
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

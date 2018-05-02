@@ -77,6 +77,28 @@ async function getNonprofitsCustom(page = 1, postsPerPage = 10, sort_by = 'REVEN
   }
 }
 
+async function getSummary() {
+  try {
+    const nonprofits = await db['nonprofits'].count()
+    const revoked = await db['nonprofits'].count({
+      where: {
+        validated: false
+      }
+    })
+    const lastUpdate = await db.update.findOne({
+      order: [ [ 'id', 'DESC' ] ]
+    })
+
+    return {
+      nonprofits: nonprofits,
+      revoked: revoked,
+      'last_update': lastUpdate
+    }
+  } catch (err) {
+    console.log(err)
+  }
+}
+
 async function getSingleNonprofit(ein, allFields = false) {
   try {
     if (isNaN(ein)) {
@@ -213,11 +235,9 @@ function deleteRevoked() {
 
 function clearTable(tableName) {
   return new Promise(resolve => {
-    console.log('here')
     // prepare the table for the import
     db.sequelize.getQueryInterface().bulkDelete(tableName, null, {})
       .then(() => {
-        console.log('and here')
         resolve(1000);
       })
       .catch((err) => {
@@ -263,6 +283,7 @@ module.exports = {
   getNonprofitsCustom,
   getRevokedCount,
   getRevokedList,
+  getSummary,
   markRevoked,
   clearTable
 };

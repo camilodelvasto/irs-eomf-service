@@ -2,8 +2,7 @@
 module.exports = (sequelize, DataTypes) => {
   var update = sequelize.define('update', {
     phase: DataTypes.STRING,
-    status: DataTypes.STRING,
-    lastUpdated: DataTypes.DATE
+    status: DataTypes.STRING
   }, {});
   update.associate = function(models) {
     // associations can be defined here

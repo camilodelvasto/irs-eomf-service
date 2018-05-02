@@ -116,6 +116,29 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /update/download/auto:
+    # binds a127 app logic to a route
+    get:
+      description: Runs all the update process automatically. Requires long polling or continuous pinging in order to keep the process running. Requires authorization token to be included in the request header (Bearer ndsvn2g8dnsb9hsg).
+      # used as the method name of the controller
+      operationId: autoDownload
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization header, defined in the .env vars
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/DefaultResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /update/download/{part}:
     # binds a127 app logic to a route
     get:

@@ -161,6 +161,7 @@ function fetchCSVFile(req, a1) {
 
 function updateDB(req) {
   return new Promise(async resolve => {
+    console.log('parsing...')
     try {
       var count = await queries.getCount('new_nonprofits')
       var batchSize = 999

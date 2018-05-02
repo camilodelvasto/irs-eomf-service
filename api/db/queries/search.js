@@ -8,6 +8,7 @@ const Op = Sequelize.Op;
 function createVectors() {
   return new Promise(async resolve => {
     try {
+      console.log('indexing...')
       var count = await queries.getCount('nonprofits')
       var batchSize = 5005
       var batchCount = Math.ceil(count / batchSize)
