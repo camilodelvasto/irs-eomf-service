@@ -80,6 +80,7 @@ async function getNonprofitsCustom(page = 1, postsPerPage = 10, sort_by = 'REVEN
 async function getSummary() {
   try {
     const nonprofits = await db['nonprofits'].count()
+    const downloaded = await db['new_nonprofits'].count()
     const revoked = await db['nonprofits'].count({
       where: {
         validated: false
@@ -91,6 +92,7 @@ async function getSummary() {
 
     return {
       nonprofits: nonprofits,
+      downloaded: downloaded,
       revoked: revoked,
       'last_update': lastUpdate
     }
