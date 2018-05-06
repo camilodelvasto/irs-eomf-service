@@ -102,7 +102,7 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /update/download/auto:
+  /update/auto:
     get:
       description: Runs all the update process automatically. Requires long polling or continuous ping in order to keep the process running. Requires authorization token to be included in the request header (Bearer ndsvn2g8dnsb9hsg).
       operationId: autoDownload
