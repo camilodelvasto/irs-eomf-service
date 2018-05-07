@@ -140,11 +140,6 @@ async function getNonprofitByName(query, page = 1, postsPerPage = 10, allFields 
             SORT_NAME: {
               [Op.like]: `%${upQuery}%`
             }
-          },
-          {
-            CITY: {
-              [Op.like]: `%${upQuery}%`
-            }
           }
         ]
       },

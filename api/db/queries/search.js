@@ -60,9 +60,7 @@ function batchVectorQuery(tableName, data, id) {
   var parsed = [];
   var weights = {
     NAME: "A",
-    SORT_NAME: "B",
-    CITY: "C",
-    ACTIVITY: "D"
+    SORT_NAME: "B"
   }
   data.forEach(nonprofit => {
     var values = []
