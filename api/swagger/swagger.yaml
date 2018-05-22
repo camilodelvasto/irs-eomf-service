@@ -381,6 +381,10 @@ definitions:
           type: string
         ACTIVITY:
           type: string
+        DEDUCTIBILITY:
+          type: string
+        SUBSECTION:
+          type: string
         NTEE_CD:
           type: string
         SORT_NAME:

@@ -11,6 +11,8 @@ const attr = [
   "CITY",
   "STATE",
   "ZIP",
+  "DEDUCTIBILITY",
+  "SUBSECTION",
   "ACTIVITY",
   "NTEE_CD",
   "SORT_NAME",
