@@ -2,8 +2,8 @@ function getClassification(subsection, classification) {
   var codes = classification.split('')
   var classificationAsText = []
 
-  switch (subsection) {
-    case "01":
+  switch (parseInt(subsection, 10)) {
+    case 1:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -12,7 +12,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "02":
+    case 2:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -21,10 +21,10 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "03":
+    case 3:
       codes.forEach((code) => {
         switch (code) {
-          case "1": 
+          case "1":
             classificationAsText.push('Charitable Organization')
             break;
           case "2": 
@@ -51,7 +51,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "04":
+    case 4:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -66,7 +66,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "05":
+    case 5:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -81,7 +81,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "06":
+    case 6:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -99,7 +99,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "07":
+    case 7:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -108,7 +108,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "08":
+    case 8:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -117,7 +117,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "09":
+    case 9:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -129,7 +129,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "10":
+    case 10:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -138,7 +138,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "11":
+    case 11:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -147,7 +147,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "12":
+    case 12:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -165,7 +165,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "13":
+    case 13:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -177,7 +177,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "14":
+    case 14:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -189,7 +189,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "15":
+    case 15:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -198,7 +198,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "16":
+    case 16:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -207,7 +207,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "17":
+    case 17:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -216,7 +216,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "18":
+    case 18:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -225,7 +225,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "19":
+    case 19:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -234,7 +234,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "20":
+    case 20:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -243,7 +243,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "21":
+    case 21:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -252,7 +252,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "22":
+    case 22:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -261,7 +261,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "23":
+    case 23:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -270,7 +270,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "24":
+    case 24:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -279,7 +279,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "25":
+    case 25:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -288,7 +288,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "26":
+    case 26:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -297,7 +297,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "27":
+    case 27:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -306,7 +306,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "29":
+    case 29:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -315,7 +315,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "40":
+    case 40:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -324,7 +324,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "50":
+    case 50:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -333,7 +333,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "60":
+    case 60:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -342,7 +342,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "70":
+    case 70:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -351,7 +351,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "71":
+    case 71:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -360,7 +360,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "81":
+    case 81:
       codes.forEach((code) => {
         switch (code) {
           case "1": 
@@ -369,7 +369,7 @@ function getClassification(subsection, classification) {
         }
       })
       break;
-    case "92":
+    case 92:
       codes.forEach((code) => {
         switch (code) {
           case "1": 

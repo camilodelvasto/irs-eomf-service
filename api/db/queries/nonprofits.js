@@ -13,6 +13,7 @@ const attr = [
   "ZIP",
   "DEDUCTIBILITY",
   "SUBSECTION",
+  "CLASSIFICATION",
   "ACTIVITY",
   "NTEE_CD",
   "SORT_NAME",
